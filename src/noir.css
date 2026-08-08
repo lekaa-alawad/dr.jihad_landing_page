@@ -1,0 +1,184 @@
+/* DIRECTION 4 — NOIR
+   Warm near-black. The logo ramp is the only light source, the photography is
+   the argument, and the type stays out of its way. */
+
+@font-face {
+  font-family: 'Bricolage';
+  src: url('/fonts/bricolage.woff2') format('woff2-variations');
+  font-weight: 400 800; font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist.woff2') format('woff2');
+  font-weight: 300 700; font-display: swap;
+}
+
+.nr {
+  --void: #0e0b0a;
+  --raise: #171211;
+  --fog: #b8a99f;
+  --light: #fbf7f3;
+  --peach: #f3b279;
+  --terra: #c9895c;
+  --hair: rgba(251, 247, 243, 0.12);
+
+  --tbc-fg: #f3b279;
+  --tbc-bg: rgba(243, 178, 121, 0.12);
+  --tbc-ring: rgba(243, 178, 121, 0.34);
+
+  --sm-radius: 4px;
+  --sm-line: rgba(251, 247, 243, 0.95);
+  --sm-grip-bg: rgba(251, 247, 243, 0.95);
+  --sm-grip-bar: #0e0b0a;
+  --sm-ring: inset 0 0 0 1px rgba(251, 247, 243, 0.14);
+
+  --mx: 50vw;
+  --my: 30vh;
+
+  position: relative;
+  background: var(--void);
+  color: var(--light);
+  font-family: 'Geist', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* one lamp in the room, following the pointer */
+.nr__lamp {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--mx) var(--my),
+    rgba(243, 178, 121, 0.09),
+    rgba(243, 178, 121, 0) 70%
+  );
+  transition: background 0.35s linear;
+}
+.nr__grain {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.nr__wrap { position: relative; z-index: 3; width: min(1280px, 100%); margin-inline: auto; padding-inline: clamp(1.1rem, 4vw, 3.5rem); }
+
+/* --- hero: the photograph is the ground --------------------------------- */
+
+.nr__hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  padding-block: 8rem clamp(3rem, 8vh, 6rem);
+  overflow: hidden;
+}
+.nr__heroShot {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 60% 40%;
+  transform: scale(1.06);
+  will-change: transform;
+  z-index: 0;
+}
+.nr__heroVeil {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(14, 11, 10, 0.72) 0%, rgba(14, 11, 10, 0.35) 35%, rgba(14, 11, 10, 0.92) 88%),
+    linear-gradient(90deg, rgba(14, 11, 10, 0.85) 0%, rgba(14, 11, 10, 0.1) 60%);
+}
+.nr__heroIn { will-change: transform; }
+
+.nr__h1 {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.7rem, 8.2vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  max-width: 15ch;
+}
+.nr__h1 .kin__mask:nth-child(4) .kin__inner { color: var(--peach); }
+
+.nr__lede {
+  margin-block-start: 1.5rem;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--fog);
+  max-width: 52ch;
+}
+
+.nr__acts { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-block-start: 2rem; }
+.nr__cta {
+  display: inline-flex; align-items: center;
+  padding: 0.95rem 1.7rem;
+  border-radius: 2px;
+  background: var(--peach);
+  color: #1a1008;
+  font-weight: 600; font-size: 0.925rem;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.4s;
+}
+.nr__cta:hover { background: var(--light); transform: translateY(-2px); }
+.nr__cta--ghost { background: transparent; color: var(--light); box-shadow: inset 0 0 0 1px var(--hair); }
+.nr__cta--ghost:hover { background: rgba(251, 247, 243, 0.08); color: var(--light); }
+
+.nr__scope {
+  position: absolute; inset-block-end: 0; inset-inline: 0; z-index: 3;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.6rem;
+  padding: 0.9rem clamp(1.1rem, 4vw, 3.5rem);
+  border-top: 1px solid var(--hair);
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fog);
+  background: rgba(14, 11, 10, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+/* --- sections ------------------------------------------------------------ */
+
+.nr__section { position: relative; z-index: 3; padding-block: clamp(4.5rem, 11vw, 9rem); }
+.nr__section--rule { border-top: 1px solid var(--hair); }
+.nr__section--end { border-top: 1px solid var(--hair); background: var(--raise); }
+
+.nr__h2 {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.9rem, 5vw, 3.9rem);
+  line-height: 1; letter-spacing: -0.035em;
+  margin-block-end: 0.9rem;
+}
+.nr__h2--sm { font-size: clamp(1.4rem, 3vw, 2.2rem); }
+.nr__sub { color: var(--fog); font-size: 1.02rem; max-width: 50ch; margin-block-end: 2.5rem; }
+
+.nr__lead { margin-block-end: 1.5rem; }
+.nr__grid { display: grid; gap: 1.1rem; }
+@media (min-width: 760px) { .nr__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1000px) { .nr__lead { width: min(66%, 820px); } }
+.nr .seam__num { color: var(--light); }
+
+.nr__rows { border-top: 1px solid var(--hair); margin-block-start: 2rem; }
+.nr__row {
+  display: grid; gap: 0.4rem 3rem;
+  padding-block: clamp(1.1rem, 2.4vw, 1.9rem);
+  border-bottom: 1px solid var(--hair);
+}
+.nr__row h3 {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 2.6vw, 1.9rem);
+  letter-spacing: -0.025em; line-height: 1.08;
+}
+.nr__row.is-lead h3 { color: var(--peach); }
+.nr__row p { color: var(--fog); font-size: 0.98rem; max-width: 46ch; }
+@media (min-width: 900px) { .nr__row { grid-template-columns: 1.05fr 0.95fr; align-items: baseline; } }
+
+.nr__rows--tight { margin-block-start: 1.5rem; }
+.nr__recRow {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--hair);
+  font-size: 1.02rem; font-weight: 500;
+}
+
+/* Centred, and left in the artwork's own copper — the colour Option 1 ships it
+   in — rather than knocked out to white. */
+.nr__tagline { display: block; width: clamp(210px, 38vw, 340px); margin: 3rem auto 0; }
+
+.nr__val { color: var(--peach); font-weight: 600; }
