@@ -11,6 +11,10 @@
          /ar/ cannot drift apart. Same in dev and in the build. -->
     <!--seo-head-->
 
+    <!-- First-visit curtain: styles and the opt-in decision, both before the
+         first paint so it never flashes in after the page. See src/intro.js. -->
+    <!--intro-head-->
+
     <script>
       // The reveal styles only bite under html.js. Setting the class here,
       // before first paint, stops the prerendered sections flashing visible and
@@ -25,6 +29,7 @@
     </script>
   </head>
   <body>
+    <!--intro-->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

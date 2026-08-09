@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
+import { introBody, introHead } from './src/intro.js';
 import { headTags, robotsTxt, sitemapXml } from './src/seo.js';
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
@@ -17,7 +18,13 @@ const seoPlugin = () => ({
   name: 'jdc-seo',
   transformIndexHtml: {
     order: 'pre',
-    handler: (html, ctx) => html.replace('<!--seo-head-->', headTags(langOf(ctx.path))),
+    handler: (html, ctx) => {
+      const lang = langOf(ctx.path);
+      return html
+        .replace('<!--seo-head-->', headTags(lang))
+        .replace('<!--intro-head-->', introHead())
+        .replace('<!--intro-->', introBody(lang));
+    },
   },
   generateBundle() {
     this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemapXml() });
