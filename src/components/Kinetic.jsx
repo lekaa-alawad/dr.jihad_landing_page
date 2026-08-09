@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef } from 'react';
 import { animate, inView, stagger } from 'motion';
+import { formatNumber } from '../i18n.js';
 
 /**
  * Text animation primitives.
@@ -76,6 +77,74 @@ export function SplitWords({ text, className = '', as: Tag = 'p' }) {
         ))}
       </span>
     </Tag>
+  );
+}
+
+/**
+ * A record figure that counts up to its value the first time it is scrolled to.
+ *
+ * The final number is what renders on the server and what sits in the markup, so
+ * a crawler and a no-JS visitor read the real figure — the count is something
+ * the browser opts into afterwards, never the source of truth. Two consequences
+ * follow from that, and both matter more here than the effect does:
+ *
+ *  - A figure already on screen at load is left alone. Snapping a settled
+ *    "4,200" back to zero so it can climb again reads as a glitch, not an
+ *    animation.
+ *  - The value is written straight to the DOM node rather than through state:
+ *    sixty renders a second across four rows is waste, and it keeps React's
+ *    idea of the tree identical to the server's.
+ *
+ * This is a clinic's record. A number left stranded mid-count would be a false
+ * claim, so the failsafe below always restores the true value.
+ */
+export function CountUp({ value, lang, className = '' }) {
+  const ref = useRef(null);
+  const final = formatNumber(value, lang);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // Already visible on arrival: leave the settled number as it is.
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
+
+    el.textContent = formatNumber(0, lang);
+
+    let controls;
+    // If the observer never fires — broken IntersectionObserver, a browser that
+    // keeps the section out of view forever — the zero above would stand as a
+    // published figure. This puts the true number back regardless. It usually
+    // fires long before the visitor scrolls this far, which is harmless: the
+    // count still runs when they arrive, from whatever the value reads then.
+    const settle = setTimeout(() => (el.textContent = final), 6000);
+
+    const stop = inView(
+      el,
+      () => {
+        controls = animate(0, value, {
+          duration: 1.5,
+          ease: [0.16, 1, 0.3, 1],
+          onUpdate: (v) => (el.textContent = formatNumber(v, lang)),
+        });
+        controls.finished.then(() => (el.textContent = final)).catch(() => {});
+      },
+      { margin: '0px 0px -12% 0px' }
+    );
+
+    return () => {
+      clearTimeout(settle);
+      controls?.stop?.();
+      stop();
+      el.textContent = final;
+    };
+  }, [value, lang, final]);
+
+  return (
+    <span ref={ref} className={className}>
+      {final}
+    </span>
   );
 }
 

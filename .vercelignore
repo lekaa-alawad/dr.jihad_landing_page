@@ -1,5 +1,0 @@
-# Vercel rebuilds this itself.
-/dist
-
-/.vercel
-.DS_Store

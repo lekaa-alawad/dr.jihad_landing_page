@@ -10,8 +10,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * the zoom pushes the source watermark band out of both halves.
  *
  * A full comparison therefore costs one image download.
+ *
+ * All wording arrives through `t` (strings[lang].cases) — the control itself is
+ * direction-agnostic, since the seam runs vertically in both locales.
  */
-export default function Seam({ src, id, label = '', theme = '' }) {
+export default function Seam({ src, id, label = '', theme = '', t }) {
   const frameRef = useRef(null);
   const [pct, setPct] = useState(56);
   const dragging = useRef(false);
@@ -74,8 +77,8 @@ export default function Seam({ src, id, label = '', theme = '' }) {
         io.disconnect();
         if (touched.current) return;
         setPct(40);
-        const t = setTimeout(() => !touched.current && setPct(56), 420);
-        return () => clearTimeout(t);
+        const timer = setTimeout(() => !touched.current && setPct(56), 420);
+        return () => clearTimeout(timer);
       },
       { threshold: 0.5 }
     );
@@ -95,15 +98,15 @@ export default function Seam({ src, id, label = '', theme = '' }) {
         onPointerCancel={onUp}
       >
         <div className="seam__layer seam__layer--before">
-          <img src={src} alt="" className="seam__shot seam__shot--top" loading="lazy" />
+          <img src={src} alt="" className="seam__shot seam__shot--top" loading="lazy" decoding="async" />
         </div>
         <div className="seam__layer seam__layer--after">
-          <img src={src} alt="" className="seam__shot seam__shot--bottom" loading="lazy" />
+          <img src={src} alt="" className="seam__shot seam__shot--bottom" loading="lazy" decoding="async" />
         </div>
 
-        <span className="seam__tag seam__tag--after">As it stands</span>
-        <span className="seam__tag seam__tag--before">As it came</span>
-        <img className="seam__stamp" src="/img/mark.png" alt="" />
+        <span className="seam__tag seam__tag--after">{t.after}</span>
+        <span className="seam__tag seam__tag--before">{t.before}</span>
+        <img className="seam__stamp" src="/img/mark.png" alt="" width="240" height="240" />
 
         <div
           className="seam__join"
@@ -113,8 +116,8 @@ export default function Seam({ src, id, label = '', theme = '' }) {
           aria-valuemin={10}
           aria-valuemax={90}
           aria-valuenow={Math.round(pct)}
-          aria-valuetext={`${Math.round(pct)}% of the finished result shown`}
-          aria-label={`Case ${id} — drag to move the seam`}
+          aria-valuetext={`${Math.round(pct)}% ${t.shown}`}
+          aria-label={`${t.caseWord} ${id} — ${t.handle}`}
           onKeyDown={onKey}
         >
           <span className="seam__grip" aria-hidden="true" />
@@ -122,10 +125,12 @@ export default function Seam({ src, id, label = '', theme = '' }) {
       </div>
 
       <figcaption className="seam__cap">
-        <span className="seam__num">Case {id}</span>
+        <span className="seam__num">
+          {t.caseWord} {id}
+        </span>
         {label && <span className="seam__label">{label}</span>}
         <span className="vh">
-          Case {id}: the same patient before and after treatment at the clinic. Drag the seam to compare.
+          {t.caseWord} {id}: {t.compare}
         </span>
       </figcaption>
     </figure>

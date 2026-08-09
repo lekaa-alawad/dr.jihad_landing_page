@@ -2,15 +2,43 @@
    Warm near-black. The logo ramp is the only light source, the photography is
    the argument, and the type stays out of its way. */
 
+/* Each face declares the script it actually covers. Because the two locales
+   share one stylesheet and one font stack, the unicode-range is what keeps an
+   Arabic reader from downloading 106KB of Latin outlines they will never see —
+   and a English reader from pulling the Arabic ones. The browser resolves it
+   per character, so no direction-based family switching is needed. */
+
 @font-face {
   font-family: 'Bricolage';
   src: url('/fonts/bricolage.woff2') format('woff2-variations');
   font-weight: 400 800; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
 }
 @font-face {
   font-family: 'Geist';
   src: url('/fonts/geist.woff2') format('woff2');
   font-weight: 300 700; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
+}
+
+/* Arabic — Reem Kufi carries the display weight, Almarai the text. */
+@font-face {
+  font-family: 'Reem Kufi';
+  src: url('/fonts/reemkufi-arabic.woff2') format('woff2');
+  font-weight: 400 700; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Almarai';
+  src: url('/fonts/almarai-arabic.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Almarai';
+  src: url('/fonts/almarai-arabic-1.woff2') format('woff2');
+  font-weight: 700; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 .nr {
@@ -35,12 +63,67 @@
   --mx: 50vw;
   --my: 30vh;
 
+  /* One stack per role, and only ever the reading script's own faces.
+     Naming both scripts here looked tidier, but each page carries a little of
+     the other alphabet — the switcher label, the case numbers, the phone digits
+     — and that was enough to pull the full Latin pair down onto the Arabic
+     page (105KB) for a dozen glyphs. Those few characters fall to system-ui
+     instead, which is indistinguishable at the size they appear. */
+  --display: 'Bricolage', system-ui, sans-serif;
+  --text: 'Geist', system-ui, sans-serif;
+
+  /* Direction-dependent values, collected here so the rules below stay
+     single-source. The veil's horizontal wash has to fall on whichever side
+     the headline sits on, and the hero crop follows it. */
+  --veil-x: 90deg;
+  --hero-crop: 60% 40%;
+
+  /* Latin display type is tracked tight. Arabic is a joined script: negative
+     tracking pulls the connecting strokes apart, and 0.95 leading clips the
+     ascenders and the hamza. Both are neutralised for RTL below. */
+  --display-track: -0.04em;
+  --display-track-sm: -0.035em;
+  --display-lead: 0.95;
+  --display-lead-sm: 1;
+
   position: relative;
   background: var(--void);
   color: var(--light);
-  font-family: 'Geist', system-ui, sans-serif;
+  font-family: var(--text);
   overflow-x: hidden;
 }
+
+[dir='rtl'] .nr {
+  --display: 'Reem Kufi', system-ui, sans-serif;
+  --text: 'Almarai', system-ui, sans-serif;
+
+  --veil-x: 270deg;
+  --hero-crop: 40% 40%;
+  --display-track: 0;
+  --display-track-sm: 0;
+  --display-lead: 1.24;
+  --display-lead-sm: 1.3;
+}
+
+/* --- language switch ------------------------------------------------------ */
+
+.nr__lang {
+  position: fixed;
+  z-index: 6;
+  inset-block-start: clamp(0.85rem, 2.2vw, 1.5rem);
+  inset-inline-end: clamp(1.1rem, 4vw, 3.5rem);
+  display: inline-flex; align-items: center;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.8rem; font-weight: 600; line-height: 1;
+  color: var(--light);
+  background: rgba(14, 11, 10, 0.55);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  backdrop-filter: blur(10px);
+  transition: background-color 0.35s, color 0.35s;
+}
+.nr__lang:hover { background: var(--peach); color: #1a1008; }
+.nr__lang:focus-visible { outline: 2.5px solid var(--peach); outline-offset: 3px; }
 
 /* one lamp in the room, following the pointer */
 .nr__lamp {
@@ -76,7 +159,7 @@
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: 60% 40%;
+  object-position: var(--hero-crop);
   transform: scale(1.06);
   will-change: transform;
   z-index: 0;
@@ -85,18 +168,28 @@
   position: absolute; inset: 0; z-index: 1;
   background:
     linear-gradient(180deg, rgba(14, 11, 10, 0.72) 0%, rgba(14, 11, 10, 0.35) 35%, rgba(14, 11, 10, 0.92) 88%),
-    linear-gradient(90deg, rgba(14, 11, 10, 0.85) 0%, rgba(14, 11, 10, 0.1) 60%);
+    linear-gradient(var(--veil-x), rgba(14, 11, 10, 0.85) 0%, rgba(14, 11, 10, 0.1) 60%);
 }
 .nr__heroIn { will-change: transform; }
 
 .nr__h1 {
-  font-family: 'Bricolage', system-ui, sans-serif;
+  font-family: var(--display);
   font-weight: 700;
   font-size: clamp(2.7rem, 8.2vw, 7rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
+  line-height: var(--display-lead);
+  letter-spacing: var(--display-track);
   max-width: 15ch;
 }
+/* The Latin headline is sized off width alone, which is fine at 0.95 leading.
+   Arabic needs 1.24 to clear its ascenders, and Reem Kufi sets visually larger
+   than Bricolage at the same pixel size — together that added ~100px of
+   headline and pushed the lede and both CTAs under the fold on a short laptop
+   window. Capping against viewport height as well as width buys it back. The
+   English scale is deliberately left exactly as it was reviewed. */
+[dir='rtl'] .nr__h1 {
+  font-size: clamp(2.3rem, min(7vw, 11.5vh), 5.6rem);
+}
+
 .nr__h1 .kin__mask:nth-child(4) .kin__inner { color: var(--peach); }
 
 .nr__lede {
@@ -131,6 +224,18 @@
   backdrop-filter: blur(10px);
 }
 
+/* Tracked-out, uppercased small caps are a Latin device. Arabic letters join,
+   so positive tracking severs the ligatures outright, and `uppercase` is a
+   no-op that only risks confusing the shaper. Both are dropped for RTL. */
+[dir='rtl'] .nr__scope,
+[dir='rtl'] .seam__tag,
+[dir='rtl'] .nr .tbc {
+  letter-spacing: 0;
+  text-transform: none;
+}
+[dir='rtl'] .nr__scope { font-size: 0.78rem; }
+[dir='rtl'] .seam__num { letter-spacing: 0; }
+
 /* --- sections ------------------------------------------------------------ */
 
 .nr__section { position: relative; z-index: 3; padding-block: clamp(4.5rem, 11vw, 9rem); }
@@ -138,10 +243,10 @@
 .nr__section--end { border-top: 1px solid var(--hair); background: var(--raise); }
 
 .nr__h2 {
-  font-family: 'Bricolage', system-ui, sans-serif;
+  font-family: var(--display);
   font-weight: 700;
   font-size: clamp(1.9rem, 5vw, 3.9rem);
-  line-height: 1; letter-spacing: -0.035em;
+  line-height: var(--display-lead-sm); letter-spacing: var(--display-track-sm);
   margin-block-end: 0.9rem;
 }
 .nr__h2--sm { font-size: clamp(1.4rem, 3vw, 2.2rem); }
@@ -160,11 +265,12 @@
   border-bottom: 1px solid var(--hair);
 }
 .nr__row h3 {
-  font-family: 'Bricolage', system-ui, sans-serif;
+  font-family: var(--display);
   font-weight: 600;
   font-size: clamp(1.15rem, 2.6vw, 1.9rem);
-  letter-spacing: -0.025em; line-height: 1.08;
+  letter-spacing: var(--display-track-sm); line-height: 1.08;
 }
+[dir='rtl'] .nr__row h3 { line-height: 1.5; }
 .nr__row.is-lead h3 { color: var(--peach); }
 .nr__row p { color: var(--fog); font-size: 0.98rem; max-width: 46ch; }
 @media (min-width: 900px) { .nr__row { grid-template-columns: 1.05fr 0.95fr; align-items: baseline; } }
@@ -182,3 +288,8 @@
 .nr__tagline { display: block; width: clamp(210px, 38vw, 340px); margin: 3rem auto 0; }
 
 .nr__val { color: var(--peach); font-weight: 600; }
+
+/* Counting through 0…4,200 changes the digits every frame. Proportional
+   figures would reflow the row on almost every one of them, so the counted
+   values are locked to tabular widths. */
+.nr__val--num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }

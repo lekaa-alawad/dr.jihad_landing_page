@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { animate, scroll } from 'motion';
-import { SplitLines, SplitWords, Reveal, RevealGroup } from './components/Kinetic.jsx';
+import { CountUp, SplitLines, SplitWords, Reveal, RevealGroup } from './components/Kinetic.jsx';
 import Seam from './components/Seam.jsx';
-import { headline, treatments, cases, contact, clinic, record } from './data.js';
+import { HERO, casePairs, strings } from './i18n.js';
 import './noir.css';
 
 /**
@@ -13,8 +13,12 @@ import './noir.css';
  * black for the same reason. It also matches the real use scene from PRODUCT.md,
  * a phone at night, and it is the one direction none of the cream-and-terracotta
  * competitors will ship. The logo ramp becomes the only light in the room.
+ *
+ * Rendered once per locale. `lang` picks the copy; direction is set on <html>
+ * by the page shell, and the stylesheet keys off it.
  */
-export default function Noir() {
+export default function Noir({ lang = 'en' }) {
+  const t = strings[lang];
   const rootRef = useRef(null);
   const heroRef = useRef(null);
   const shotRef = useRef(null);
@@ -61,87 +65,101 @@ export default function Noir() {
       <div className="nr__lamp" aria-hidden="true" />
       <div className="nr__grain" aria-hidden="true" />
 
-      <section className="nr__hero" ref={heroRef}>
-        <img
-          ref={shotRef}
-          className="nr__heroShot"
-          src="/img/smile-a.webp"
-          alt="Close-up of a finished smile, photographed at the clinic"
-        />
-        <div className="nr__heroVeil" aria-hidden="true" />
-        <div className="nr__wrap nr__heroIn" ref={titleRef}>
-          <SplitLines lines={headline.lines} className="nr__h1" delay={0.25} />
-          <SplitWords text={headline.lede} className="nr__lede" />
-          <Reveal className="nr__acts" delay={0.2}>
-            <a className="nr__cta" href="#reach">Contact the clinic</a>
-            <a className="nr__cta nr__cta--ghost" href="#cases">See real results</a>
-          </Reveal>
-        </div>
-        <div className="nr__scope" aria-hidden="true">
-          {treatments.map((t) => <span key={t.short}>{t.short}</span>)}
-        </div>
-      </section>
+      {/* A plain anchor to the other locale: a crawler follows it, and a
+          visitor without JavaScript still gets the switch. */}
+      <a className="nr__lang" href={t.switchTo.href} hrefLang={t.switchTo.code} lang={t.switchTo.code} title={t.switchTo.title}>
+        {t.switchTo.label}
+      </a>
 
-      <section className="nr__section" id="cases">
-        <div className="nr__wrap">
-          <SplitWords as="h2" text="Every seam remembers a hand." className="nr__h2" />
-          <Reveal><p className="nr__sub">Drag the seam. Above it the work as it stands, below it as it came.</p></Reveal>
-          <Reveal className="nr__lead">
-            <Seam src={cases[0].src} id={cases[0].id} label={cases[0].label} theme="seam--nr" />
-          </Reveal>
-          <RevealGroup className="nr__grid" kind="scale" gap={0.1}>
-            {cases.slice(1).map((c) => (
-              <Seam key={c.id} src={c.src} id={c.id} label={c.label} theme="seam--nr" />
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
+      <main>
+        <section className="nr__hero" ref={heroRef}>
+          <img
+            ref={shotRef}
+            className="nr__heroShot"
+            src={HERO.src}
+            width={HERO.w}
+            height={HERO.h}
+            alt={t.hero.alt}
+            fetchPriority="high"
+            decoding="async"
+          />
+          <div className="nr__heroVeil" aria-hidden="true" />
+          <div className="nr__wrap nr__heroIn" ref={titleRef}>
+            <SplitLines lines={t.hero.lines} className="nr__h1" delay={0.25} />
+            <SplitWords text={t.hero.lede} className="nr__lede" />
+            <Reveal className="nr__acts" delay={0.2}>
+              <a className="nr__cta" href="#reach">{t.hero.primary}</a>
+              <a className="nr__cta nr__cta--ghost" href="#cases">{t.hero.secondary}</a>
+            </Reveal>
+          </div>
+          <div className="nr__scope" aria-hidden="true">
+            {t.scope.map((s) => <span key={s}>{s}</span>)}
+          </div>
+        </section>
 
-      <section className="nr__section nr__section--rule" id="treatments">
-        <div className="nr__wrap">
-          <SplitWords as="h2" text="Everything, in one place." className="nr__h2" />
-          <RevealGroup className="nr__rows" gap={0.05}>
-            {treatments.map((t) => (
-              <div className={`nr__row ${t.lead ? 'is-lead' : ''}`} key={t.name}>
-                <h3>{t.name}</h3>
-                <p>{t.note}</p>
-              </div>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
+        <section className="nr__section" id="cases">
+          <div className="nr__wrap">
+            <SplitWords as="h2" text={t.cases.heading} className="nr__h2" />
+            <Reveal><p className="nr__sub">{t.cases.sub}</p></Reveal>
+            <Reveal className="nr__lead">
+              <Seam {...casePairs[0]} label={t.cases.labels[0]} theme="seam--nr" t={t.cases} />
+            </Reveal>
+            <RevealGroup className="nr__grid" kind="scale" gap={0.1}>
+              {casePairs.slice(1).map((c, i) => (
+                <Seam key={c.id} {...c} label={t.cases.labels[i + 1]} theme="seam--nr" t={t.cases} />
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
 
-      <section className="nr__section">
-        <div className="nr__wrap">
-          <SplitWords as="h2" text="The record." className="nr__h2 nr__h2--sm" />
-          <Reveal><p className="nr__sub">The practice in numbers.</p></Reveal>
-          <RevealGroup className="nr__rows nr__rows--tight" gap={0.05}>
-            {record.map((r) => (
-              <div className="nr__recRow" key={r.label}>
-                <span>{r.label}</span>
-                <span className="nr__val">{r.value}</span>
-              </div>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
+        <section className="nr__section nr__section--rule" id="treatments">
+          <div className="nr__wrap">
+            <SplitWords as="h2" text={t.treatments.heading} className="nr__h2" />
+            <RevealGroup className="nr__rows" gap={0.05}>
+              {t.treatments.items.map((item) => (
+                <div className={`nr__row ${item.lead ? 'is-lead' : ''}`} key={item.name}>
+                  <h3>{item.name}</h3>
+                  <p>{item.note}</p>
+                </div>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
 
-      <section className="nr__section nr__section--end" id="reach">
-        <div className="nr__wrap">
-          <SplitWords as="h2" text="Reach us." className="nr__h2" />
-          <RevealGroup className="nr__rows nr__rows--tight" gap={0.06}>
-            {contact.map((c) => (
-              <div className="nr__recRow" key={c.label}>
-                <span>{c.label}</span>
-                <span className="nr__val">{c.value}</span>
-              </div>
-            ))}
-          </RevealGroup>
-          <Reveal>
-            <img className="nr__tagline" src="/img/tagline.png" alt={clinic.tagline} />
-          </Reveal>
-        </div>
-      </section>
+        <section className="nr__section" id="record">
+          <div className="nr__wrap">
+            <SplitWords as="h2" text={t.record.heading} className="nr__h2 nr__h2--sm" />
+            <Reveal><p className="nr__sub">{t.record.sub}</p></Reveal>
+            <RevealGroup className="nr__rows nr__rows--tight" gap={0.05}>
+              {t.record.items.map((r) => (
+                <div className="nr__recRow" key={r.label}>
+                  <span>{r.label}</span>
+                  <CountUp value={r.value} lang={lang} className="nr__val nr__val--num" />
+                </div>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
+
+        <section className="nr__section nr__section--end" id="reach">
+          <div className="nr__wrap">
+            <SplitWords as="h2" text={t.reach.heading} className="nr__h2" />
+            <RevealGroup className="nr__rows nr__rows--tight" gap={0.06}>
+              {t.reach.items.map((c) => (
+                <div className="nr__recRow" key={c.label}>
+                  <span>{c.label}</span>
+                  {/* A Latin-digit phone number inside an RTL paragraph reorders
+                      unless it is explicitly marked as its own LTR run. */}
+                  <span className="nr__val" dir={c.ltr ? 'ltr' : undefined}>{c.value}</span>
+                </div>
+              ))}
+            </RevealGroup>
+            <Reveal>
+              <img className="nr__tagline" src="/img/tagline.png" width="900" height="176" alt={t.tagline} loading="lazy" />
+            </Reveal>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

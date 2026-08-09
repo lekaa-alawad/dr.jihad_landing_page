@@ -1,11 +1,27 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import Noir from './Noir.jsx';
 import './base.css';
 
-// base.css hides `.reveal` only under `html.js`, so an environment without
-// JavaScript never gets a page of invisible sections.
-document.documentElement.classList.add('js');
+// The locale is decided by which document was served, not by anything at
+// runtime — /index.html carries lang="en", /ar/index.html lang="ar".
+const lang = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+
+const container = document.getElementById('root');
+const app = (
+  <StrictMode>
+    <Noir lang={lang} />
+  </StrictMode>
+);
+
+// A production build arrives with the markup already in place, so it hydrates.
+// `npm run dev` serves an empty shell, so it mounts from scratch.
+if (container.firstChild) hydrateRoot(container, app);
+else createRoot(container).render(app);
+
+// Tells the inline guard in the page shell that the bundle made it, so it
+// leaves html.js alone and the reveals run as intended.
+document.documentElement.setAttribute('data-hydrated', '');
 
 // Failsafe: nothing may stay invisible because a reveal failed to fire.
 setTimeout(() => {
@@ -17,9 +33,3 @@ setTimeout(() => {
     }
   });
 }, 3200);
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Noir />
-  </StrictMode>
-);
