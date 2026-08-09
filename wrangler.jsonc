@@ -1,0 +1,24 @@
+{
+  // Static-asset Worker. The build produces plain files in dist/ — there is no
+  // server-side code — so this only tells wrangler what to upload and how to
+  // serve it. Without this file `wrangler deploy` has nothing to go on and
+  // tries to parse vite.config.js as its own config, which is what failed.
+
+  // Must stay in step with the Worker drjihad.care is routed to. Renaming this
+  // does not rename the Worker — it deploys a second, unrouted one and leaves
+  // the live site on the old build.
+  "name": "dr-jihad-landing-page",
+
+  "compatibility_date": "2026-08-09",
+
+  "assets": {
+    "directory": "./dist",
+
+    // NOT "single-page-application". This site is two real documents — / and
+    // /ar/ — and SPA handling would serve the English index.html for every
+    // unmatched path, which is exactly the bug visible on the current live
+    // site, where /ar/ returns <html lang="en">. Directory indexes still
+    // resolve, so /ar/ correctly serves /ar/index.html.
+    "not_found_handling": "404-page"
+  }
+}
