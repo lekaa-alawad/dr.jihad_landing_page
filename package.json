@@ -8,6 +8,10 @@
     "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview"
   },
+  "//allowScripts": "npm now skips install scripts unless they are approved here. esbuild's postinstall is what puts its native binary in place, and Vite cannot build without it — Cloudflare's build image warns 'not yet covered by allowScripts' and carries on, so the failure surfaces later as a broken build rather than a failed install.",
+  "allowScripts": {
+    "esbuild": true
+  },
   "dependencies": {
     "motion": "^13.0.0",
     "react": "^19.1.0",
