@@ -24,6 +24,12 @@ else createRoot(container).render(app);
 document.documentElement.setAttribute('data-hydrated', '');
 
 // Failsafe: nothing may stay invisible because a reveal failed to fire.
+//
+// Pushed out past the intro curtain when there is one. The hero deliberately
+// holds its entrance until the curtain lifts, and a sweep that landed in the
+// middle of that would snap it visible and cancel the very animation it exists
+// to protect.
+const introRemaining = Math.max(0, (window.__introLiftAt ?? 0) - performance.now());
 setTimeout(() => {
   document.querySelectorAll('.reveal').forEach((el) => {
     if (parseFloat(getComputedStyle(el).opacity) < 0.5) {
@@ -32,4 +38,4 @@ setTimeout(() => {
       el.style.transform = 'none';
     }
   });
-}, 3200);
+}, 3200 + introRemaining);

@@ -17,8 +17,10 @@
 import { strings } from './i18n.js';
 
 /** How long the curtain holds before it starts to lift. */
-const HOLD = '2s';
-const LIFT = '0.8s';
+const HOLD_MS = 2000;
+const LIFT_MS = 800;
+const HOLD = `${HOLD_MS}ms`;
+const LIFT = `${LIFT_MS}ms`;
 
 export const introHead = () => `<style>
       /* The opt-in flag on <html> is deliberately NOT called "intro". These
@@ -87,6 +89,12 @@ export const introHead = () => `<style>
         ) {
           document.documentElement.classList.add('intro-on');
           sessionStorage.setItem('jdc-intro', '1');
+          // When the curtain will start lifting, for the page underneath to
+          // wait on. Without this the hero plays its whole entrance behind the
+          // curtain and is already finished by the time anyone can see it.
+          // Set here rather than in the bundle because the curtain's animation
+          // starts at first paint, long before hydration.
+          window.__introLiftAt = performance.now() + ${HOLD_MS};
         }
       } catch (e) {}
     </script>`;

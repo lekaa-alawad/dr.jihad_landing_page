@@ -10,7 +10,16 @@ import { formatNumber } from '../i18n.js';
  * sentence, not a stream of single letters.
  */
 
-export function SplitLines({ lines, className = '', delay = 0, as: Tag = 'h1' }) {
+/**
+ * Seconds still to wait before the intro curtain starts lifting, or 0 when
+ * there is no curtain. The page renders underneath it, so anything that plays
+ * on mount would otherwise be over before it could be seen — `afterIntro`
+ * shifts a block's entrance to the moment the curtain clears, leaving the
+ * relative choreography between blocks untouched.
+ */
+const introOffset = () => Math.max(0, (window.__introLiftAt ?? 0) - performance.now()) / 1000;
+
+export function SplitLines({ lines, className = '', delay = 0, afterIntro = false, as: Tag = 'h1' }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -20,13 +29,14 @@ export function SplitLines({ lines, className = '', delay = 0, as: Tag = 'h1' })
       el.querySelectorAll('.kin__inner').forEach((n) => (n.style.transform = 'none'));
       return;
     }
+    const start = delay + (afterIntro ? introOffset() : 0);
     const inners = el.querySelectorAll('.kin__inner');
     animate(
       inners,
       { transform: ['translateY(105%) rotate(2deg)', 'translateY(0%) rotate(0deg)'] },
-      { duration: 1.05, delay: stagger(0.085, { startDelay: delay }), ease: [0.16, 1, 0.3, 1] }
+      { duration: 1.05, delay: stagger(0.085, { startDelay: start }), ease: [0.16, 1, 0.3, 1] }
     );
-  }, [delay]);
+  }, [delay, afterIntro]);
 
   return (
     <Tag className={className} ref={ref}>
@@ -41,7 +51,7 @@ export function SplitLines({ lines, className = '', delay = 0, as: Tag = 'h1' })
 }
 
 /** Word-by-word rise, fired when the block scrolls into view. */
-export function SplitWords({ text, className = '', as: Tag = 'p' }) {
+export function SplitWords({ text, className = '', delay = 0, afterIntro = false, as: Tag = 'p' }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -54,15 +64,18 @@ export function SplitWords({ text, className = '', as: Tag = 'p' }) {
     return inView(
       el,
       () => {
+        // Resolved here rather than at mount: in view means the curtain is
+        // about to clear, so this is the truest reading of what is left of it.
+        const start = delay + (afterIntro ? introOffset() : 0);
         animate(
           el.querySelectorAll('.kin__w'),
           { opacity: [0, 1], transform: ['translateY(14px)', 'translateY(0px)'] },
-          { duration: 0.6, delay: stagger(0.018), ease: [0.16, 1, 0.3, 1] }
+          { duration: 0.6, delay: stagger(0.018, { startDelay: start }), ease: [0.16, 1, 0.3, 1] }
         );
       },
       { margin: '0px 0px -15% 0px' }
     );
-  }, [text]);
+  }, [text, delay, afterIntro]);
 
   return (
     <Tag className={className} ref={ref}>
@@ -149,7 +162,7 @@ export function CountUp({ value, lang, className = '' }) {
 }
 
 /** Generic scroll reveal for blocks. Always resolves to visible. */
-export function Reveal({ children, className = '', y = 26, blur = 8, delay = 0 }) {
+export function Reveal({ children, className = '', y = 26, blur = 8, delay = 0, afterIntro = false }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -162,10 +175,11 @@ export function Reveal({ children, className = '', y = 26, blur = 8, delay = 0 }
     return inView(
       el,
       () => {
+        const start = delay + (afterIntro ? introOffset() : 0);
         animate(
           el,
           { opacity: [0, 1], filter: [`blur(${blur}px)`, 'blur(0px)'], transform: [`translateY(${y}px)`, 'translateY(0px)'] },
-          { duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] }
+          { duration: 0.85, delay: start, ease: [0.16, 1, 0.3, 1] }
         ).finished.then(() => {
           el.style.opacity = 1;
           el.style.filter = 'none';
@@ -173,7 +187,7 @@ export function Reveal({ children, className = '', y = 26, blur = 8, delay = 0 }
       },
       { margin: '0px 0px -12% 0px' }
     );
-  }, [y, blur, delay]);
+  }, [y, blur, delay, afterIntro]);
 
   return (
     <div ref={ref} className={`reveal ${className}`}>

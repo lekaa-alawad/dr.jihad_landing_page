@@ -85,9 +85,13 @@ export default function Noir({ lang = 'en' }) {
           />
           <div className="nr__heroVeil" aria-hidden="true" />
           <div className="nr__wrap nr__heroIn" ref={titleRef}>
-            <SplitLines lines={t.hero.lines} className="nr__h1" delay={0.25} />
-            <SplitWords text={t.hero.lede} className="nr__lede" />
-            <Reveal className="nr__acts" delay={0.2}>
+            {/* afterIntro only here: everything below the fold already waits
+                for a scroll, so the curtain never steals its entrance. The
+                three offsets are identical, so the choreography between them
+                is exactly what it was before the curtain existed. */}
+            <SplitLines lines={t.hero.lines} className="nr__h1" delay={0.25} afterIntro />
+            <SplitWords text={t.hero.lede} className="nr__lede" afterIntro />
+            <Reveal className="nr__acts" delay={0.2} afterIntro>
               <a className="nr__cta" href="#reach">{t.hero.primary}</a>
               <a className="nr__cta nr__cta--ghost" href="#cases">{t.hero.secondary}</a>
             </Reveal>
