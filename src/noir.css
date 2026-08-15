@@ -21,11 +21,19 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
 }
 
-/* Arabic — Reem Kufi carries the display weight, Almarai the text. */
+/* Arabic — Arslan Wessam A carries the display weight, Almarai the text.
+   Chosen by the client from the candidates in preview/.
+
+   Diwani ships as a single cut, so 400 is all there is. Headings still ask for
+   600/700 and the browser synthesises those, which is exactly what the client
+   approved in the preview — matching it here rather than quietly dropping the
+   heading weights to 400, which would render a different face than the one
+   signed off. Subset from the 1.7 MB original to the ranges below: 140 KB of
+   woff2 down to 39 KB, on a file the Arabic hero heading waits for. */
 @font-face {
-  font-family: 'Reem Kufi';
-  src: url('/fonts/reemkufi-arabic.woff2') format('woff2');
-  font-weight: 400 700; font-display: swap;
+  font-family: 'Arslan Wessam';
+  src: url('/fonts/arslanwessam-arabic.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 @font-face {
@@ -94,7 +102,7 @@
 }
 
 [dir='rtl'] .nr {
-  --display: 'Reem Kufi', system-ui, sans-serif;
+  --display: 'Arslan Wessam', system-ui, sans-serif;
   --text: 'Almarai', system-ui, sans-serif;
 
   --veil-x: 270deg;
@@ -275,6 +283,150 @@
 .nr__row p { color: var(--fog); font-size: 0.98rem; max-width: 46ch; }
 @media (min-width: 900px) { .nr__row { grid-template-columns: 1.05fr 0.95fr; align-items: baseline; } }
 
+/* The imaging modalities. Marker is drawn rather than listed: a `list-style`
+   bullet sits outside the box and lands on the wrong side under RTL, while a
+   ::marker on an inline-start padding follows the direction on its own. */
+.nr__subList {
+  list-style: none;
+  margin-block-start: 0.85rem;
+  display: grid; gap: 0.4rem;
+  max-width: 46ch;
+  color: var(--fog); font-size: 0.92rem; line-height: 1.5;
+}
+.nr__subList li { position: relative; padding-inline-start: 1rem; }
+.nr__subList li::before {
+  content: ''; position: absolute; inset-inline-start: 0; inset-block-start: 0.62em;
+  width: 5px; height: 1px; background: var(--peach);
+}
+
+/* --- section media -------------------------------------------------------- */
+
+.gal { display: grid; gap: 0.7rem; margin-block-start: 1.2rem; }
+/* Kept for any section that shows its media in the page rather than behind a
+   button. Nothing uses it at present — every gallery is opt-in. */
+.gal--inline { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+.gal__cell {
+  position: relative; overflow: hidden;
+  border-radius: 10px; background: rgba(251, 247, 243, 0.04);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+/* Every clip and photograph here came off a phone held upright, so the cells
+   are portrait. Fixing the ratio rather than letting the media set it keeps a
+   row of them aligned even when their sources differ slightly. */
+.gal__cell img, .gal__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* `--ar` comes from each image's real dimensions; the fallback covers the
+   portrait phone stills, and the clips are all upright. */
+.gal__cell { aspect-ratio: var(--ar, 3 / 4); }
+.gal__cell--video { aspect-ratio: 9 / 16; }
+/* The clip keeps its own 9/16 everywhere. An earlier pass capped it at 4/5
+   inside dialogs to even up the row against the landscape stills, which looked
+   tidier and cropped the frame to do it — the wrong trade on footage whose
+   whole job is showing the room. Ragged row, whole picture. */
+
+/* The play control doubles as the caption. Before the first press it is the
+   only thing describing the clip, since the poster carries no words. */
+.gal__play {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.8rem; padding: 1.2rem;
+  border: 0; cursor: pointer; font: inherit; text-align: center;
+  color: var(--light);
+  background: linear-gradient(to top, rgba(14, 11, 10, 0.75), rgba(14, 11, 10, 0.12));
+  transition: background 0.3s;
+}
+.gal__play:hover { background: linear-gradient(to top, rgba(14, 11, 10, 0.85), rgba(14, 11, 10, 0.3)); }
+.gal__playIcon {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--peach);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* The triangle, drawn rather than shipped as an icon file. Physical border
+   properties, not logical ones: a play glyph means "forward in time", which
+   points right in both scripts — the RTL page does not run its videos
+   backwards. */
+.gal__playIcon::after {
+  content: ''; position: absolute; inset: 0; margin: auto;
+  width: 0; height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 16px solid var(--void);
+  transform: translateX(3px);
+}
+.gal__play:hover .gal__playIcon { transform: scale(1.08); }
+.gal__playNote { font-size: 0.8rem; color: var(--fog); max-width: 32ch; line-height: 1.5; }
+
+/* --- the opt-in button and its dialog ------------------------------------- */
+
+.gal__open {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  margin-block-start: 1.1rem;
+  padding: 0.55rem 1.1rem; border-radius: 999px;
+  font: inherit; font-size: 0.86rem; font-weight: 600; cursor: pointer;
+  color: var(--light); background: transparent;
+  border: 1px solid var(--hair);
+  transition: background 0.25s, border-color 0.25s, transform 0.25s;
+}
+.gal__open:hover { background: rgba(251, 247, 243, 0.07); border-color: var(--fog); transform: translateY(-1px); }
+.gal__openCount {
+  font-size: 0.72rem; font-weight: 700; color: var(--peach);
+  padding-inline-start: 0.6rem; border-inline-start: 1px solid var(--hair);
+}
+
+.gal__dialog {
+  width: min(94vw, 1000px);
+  max-height: 88vh;
+  /* The UA centres a modal dialog with `margin: auto`; the reset at the top of
+     this file zeroes it, so it has to be put back by hand. */
+  margin: auto;
+  padding: 0; border: 0; border-radius: 14px;
+  background: #14100e; color: var(--light);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--hair);
+  overflow: auto; overscroll-behavior: contain;
+}
+.gal__dialog::backdrop { background: rgba(8, 6, 5, 0.82); backdrop-filter: blur(6px); }
+.gal__dialogBar {
+  position: sticky; top: 0; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 1.6rem);
+  background: #14100e; border-bottom: 1px solid var(--hair);
+}
+.gal__dialogBar h4 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
+.gal__close {
+  width: 34px; height: 34px; flex: none;
+  display: grid; place-items: center;
+  font: inherit; font-size: 1.4rem; line-height: 1; cursor: pointer;
+  color: var(--light); background: transparent;
+  border: 1px solid var(--hair); border-radius: 50%;
+}
+.gal__close:hover { background: rgba(251, 247, 243, 0.09); }
+
+/* Columns, not a grid. The dialog now mixes an upright clip with landscape
+   console shots and portrait ones, and in a grid the row height is set by the
+   tallest cell — leaving a quarter-screen of dead space under the short ones.
+   Multi-column flow packs them by height instead, which is the masonry
+   behaviour without waiting for `grid-template-rows: masonry` to ship.
+   Nothing is cropped to achieve it; every cell keeps its own proportions. */
+.gal--dialog {
+  display: block;
+  column-width: 220px;
+  column-gap: 0.7rem;
+  padding: clamp(1rem, 3vw, 1.6rem); margin-block-start: 0;
+}
+/* A cell split across a column break would show half a screen at the bottom of
+   one column and half at the top of the next. */
+.gal--dialog .gal__cell {
+  break-inside: avoid;
+  margin-block-end: 0.7rem;
+}
+
+.gal__note {
+  padding: 0 clamp(1rem, 3vw, 1.6rem) clamp(1rem, 3vw, 1.6rem);
+  color: var(--fog); font-size: 0.85rem; line-height: 1.6; max-width: 62ch;
+}
+
 .nr__rows--tight { margin-block-start: 1.5rem; }
 .nr__recRow {
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem;
@@ -287,7 +439,27 @@
    in — rather than knocked out to white. */
 .nr__tagline { display: block; width: clamp(210px, 38vw, 340px); margin: 3rem auto 0; }
 
+/* A row can carry more than one number. They stack against the row's end edge
+   — right under LTR, left under RTL — which `flex-end` resolves on its own
+   now that the group inherits the page direction. */
+.nr__vals {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem;
+  text-align: end;
+}
+
 .nr__val { color: var(--peach); font-weight: 600; }
+.nr__val a { color: inherit; text-decoration: none; }
+.nr__val a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.nr__wa {
+  color: var(--fog); font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+  padding: 0.2rem 0.6rem; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  transition: color 0.2s, box-shadow 0.2s;
+}
+.nr__wa:hover { color: var(--light); box-shadow: inset 0 0 0 1px var(--fog); }
+[dir='rtl'] .nr__wa { letter-spacing: 0; text-transform: none; font-size: 0.84rem; }
 
 /* Counting through 0…4,200 changes the digits every frame. Proportional
    figures would reflow the row on almost every one of them, so the counted

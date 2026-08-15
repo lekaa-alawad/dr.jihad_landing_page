@@ -3,3 +3,7 @@ dist
 .wrangler
 .env*
 .DS_Store
+
+fonts-inbox/
+preview/fonts/
+.venv-fonts/

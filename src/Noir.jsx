@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { animate, scroll } from 'motion';
 import { CountUp, SplitLines, SplitWords, Reveal, RevealGroup } from './components/Kinetic.jsx';
 import Seam from './components/Seam.jsx';
-import { HERO, casePairs, strings } from './i18n.js';
+import Gallery from './components/Gallery.jsx';
+import { HERO, casePairs, dialable, strings, waLink } from './i18n.js';
 import './noir.css';
 
 /**
@@ -123,7 +124,18 @@ export default function Noir({ lang = 'en' }) {
               {t.treatments.items.map((item) => (
                 <div className={`nr__row ${item.lead ? 'is-lead' : ''}`} key={item.name}>
                   <h3>{item.name}</h3>
-                  <p>{item.note}</p>
+                  {/* The note and the list are one cell, so on wide screens the
+                      imaging modalities stay in the right-hand column with the
+                      sentence that introduces them. */}
+                  <div>
+                    <p>{item.note}</p>
+                    {item.list && (
+                      <ul className="nr__subList">
+                        {item.list.map((sub) => <li key={sub}>{sub}</li>)}
+                      </ul>
+                    )}
+                    {item.gallery && <Gallery gallery={item.gallery} t={t.gallery} />}
+                  </div>
                 </div>
               ))}
             </RevealGroup>
@@ -152,9 +164,30 @@ export default function Noir({ lang = 'en' }) {
               {t.reach.items.map((c) => (
                 <div className="nr__recRow" key={c.label}>
                   <span>{c.label}</span>
-                  {/* A Latin-digit phone number inside an RTL paragraph reorders
-                      unless it is explicitly marked as its own LTR run. */}
-                  <span className="nr__val" dir={c.ltr ? 'ltr' : undefined}>{c.value}</span>
+                  {/* `dir` goes on each value, never on the group: a Latin-digit
+                      phone number reorders inside an RTL paragraph unless it is
+                      marked as its own LTR run, but marking the group would also
+                      flip which edge the values align to, and stack them against
+                      the wrong side of the row. */}
+                  <span className="nr__vals">
+                    {c.values.map((v) => (
+                      <span className="nr__val" key={v} dir={c.ltr ? 'ltr' : undefined}>
+                        {c.tel ? <a href={`tel:${dialable(v)}`}>{v}</a> : v}
+                      </span>
+                    ))}
+                    {c.wa && (
+                      // rel is what keeps the opened tab from reaching back
+                      // into this one through window.opener
+                      <a
+                        className="nr__wa"
+                        href={waLink(c.values[0])}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t.reach.waLabel}
+                      </a>
+                    )}
+                  </span>
                 </div>
               ))}
             </RevealGroup>

@@ -4,7 +4,7 @@
 // This runs at build time only (from vite.config.js and scripts/prerender.mjs).
 // Nothing here is shipped to the browser.
 
-import { HERO, SITE, locales, pathFor, strings } from './i18n.js';
+import { HERO, SITE, dialable, locales, pathFor, strings } from './i18n.js';
 
 /** Trailing slashes stripped so `origin() + pathFor()` never doubles up. */
 export const origin = () => (process.env.SITE_URL || SITE).replace(/\/+$/, '');
@@ -19,22 +19,21 @@ const esc = (s) =>
 // the two preloads have to be chosen per locale rather than listed together.
 const FONTS = {
   en: ['/fonts/bricolage.woff2', '/fonts/geist.woff2'],
-  ar: ['/fonts/reemkufi-arabic.woff2', '/fonts/almarai-arabic.woff2'],
+  ar: ['/fonts/arslanwessam-arabic.woff2', '/fonts/almarai-arabic.woff2'],
 };
 
 /**
  * schema.org `Dentist` — a LocalBusiness subtype.
  *
- * Address and telephone are omitted while `confirmed: false`. That costs the
- * page eligibility for the local rich result, which needs a postal address;
- * emitting the placeholder Business Bay address instead would buy the rich
- * result with a fabricated location, and a wrong NAP propagated into the local
- * index is far more expensive to correct than a missing one.
+ * Any `reach` row still carrying `confirmed: false` is withheld from here: a
+ * wrong NAP propagated into the local index is far more expensive to correct
+ * than a missing one. The address and phone numbers are now confirmed, so both
+ * are published; `openingHours` is not, for the reason given below.
  */
 export function jsonLd(lang) {
   const t = strings[lang];
   const confirmed = t.reach.items.filter((i) => i.confirmed);
-  const find = (k) => confirmed.find((i) => i.key === k)?.value;
+  const find = (k) => confirmed.find((i) => i.key === k)?.values;
 
   const node = {
     '@context': 'https://schema.org',
@@ -48,19 +47,39 @@ export function jsonLd(lang) {
     image: `${origin()}${HERO.src}`,
     slogan: t.tagline,
     founder: { '@type': 'Person', name: t.doctor, jobTitle: lang === 'ar' ? 'طبيب أسنان' : 'Dentist' },
+    // A service's sub-capabilities (the imaging modalities) are folded into the
+    // description rather than dropped: the note alone ends on a colon, which
+    // would publish a sentence that goes nowhere.
     availableService: t.treatments.items.map((s) => ({
       '@type': 'MedicalProcedure',
       name: s.name,
-      description: s.note,
+      description: s.list ? `${s.note} ${s.list.join(lang === 'ar' ? '، ' : ', ')}.` : s.note,
     })),
   };
 
-  const address = find('address');
-  const phone = find('phone');
-  const hours = find('hours');
-  if (address) node.address = { '@type': 'PostalAddress', streetAddress: address };
-  if (phone) node.telephone = phone.replace(/\s+/g, '');
-  if (hours) node.openingHours = hours;
+  // The clinic's own street line, plus the locality and country spelled out
+  // as their own fields — Google matches a local listing on those, and will
+  // not parse them back out of a single streetAddress string.
+  if (find('address')) {
+    node.address = {
+      '@type': 'PostalAddress',
+      streetAddress: lang === 'ar' ? 'أوتوستراد المزة، بناء النقل' : 'Mazzeh Autostrad, Al-Naql Building',
+      addressLocality: lang === 'ar' ? 'دمشق' : 'Damascus',
+      addressCountry: 'SY',
+    };
+  }
+
+  // Every number the clinic answers, landlines and mobile alike.
+  const numbers = [...(find('phone') ?? []), ...(find('whatsapp') ?? [])].map(dialable);
+  if (numbers.length) node.telephone = numbers;
+
+  // No `openingHours`. The clinic confirmed the times but not which days it
+  // keeps them, and the property's grammar has no way to say "these hours, days
+  // unknown" — the value must name a day range. Guessing one would publish an
+  // opening day the clinic never gave us, and Google surfaces that guess in the
+  // knowledge panel as fact. The hours still render on the page; only the
+  // machine-readable claim is withheld. Add `Mo-Su 10:00-20:00` (or whatever
+  // the real range is) here once the days are confirmed.
 
   // `<` escaped so the payload can never terminate the script element early.
   return JSON.stringify(node).replace(/</g, '\\u003c');
