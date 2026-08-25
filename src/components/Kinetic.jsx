@@ -50,7 +50,16 @@ export function SplitLines({ lines, className = '', delay = 0, afterIntro = fals
   );
 }
 
-/** Word-by-word rise, fired when the block scrolls into view. */
+/**
+ * Word-by-word rise, fired when the block scrolls into view.
+ *
+ * A newline in `text` becomes a line break. The hero's description is four
+ * sentences, one of them a colon introducing a list of departments, and running
+ * them together as one paragraph loses the only structure the copy has. The
+ * stagger still runs across the whole block, so the break costs nothing in the
+ * choreography — and the string a screen reader hears is the original, newlines
+ * and all, which HTML collapses to spaces.
+ */
 export function SplitWords({ text, className = '', delay = 0, afterIntro = false, as: Tag = 'p' }) {
   const ref = useRef(null);
 
@@ -81,11 +90,16 @@ export function SplitWords({ text, className = '', delay = 0, afterIntro = false
     <Tag className={className} ref={ref}>
       <span className="vh">{text}</span>
       <span aria-hidden="true">
-        {text.split(' ').map((w, i) => (
-          // the space is a text node BETWEEN spans: inside an inline-block it
-          // gets trimmed and every word runs together
-          <Fragment key={i}>
-            <span className="kin__w">{w}</span>{' '}
+        {text.split('\n').map((line, li) => (
+          <Fragment key={li}>
+            {li > 0 && <br />}
+            {line.split(' ').map((w, i) => (
+              // the space is a text node BETWEEN spans: inside an inline-block
+              // it gets trimmed and every word runs together
+              <Fragment key={i}>
+                <span className="kin__w">{w}</span>{' '}
+              </Fragment>
+            ))}
           </Fragment>
         ))}
       </span>

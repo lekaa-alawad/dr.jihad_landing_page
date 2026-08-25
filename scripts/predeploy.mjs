@@ -17,6 +17,14 @@ const src = readFileSync(fileURLToPath(new URL('../src/i18n.js', import.meta.url
 // Each entry: a marker in i18n.js, and what is still owed on it.
 const OUTSTANDING = [
   {
+    find: '!! PLACEHOLDER — every name',
+    what: 'The dentists (team.members, both locales)',
+    detail:
+      'All six names, specialisms and biographies are invented, and the portraits\n' +
+      '     are monogram placeholders. Six real people work here; none of them is\n' +
+      '     currently on the page.',
+  },
+  {
     find: '// PLACEHOLDER',
     what: 'Case labels (cases.labels, both locales)',
     detail:

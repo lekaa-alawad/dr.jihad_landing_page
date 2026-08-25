@@ -113,14 +113,70 @@ done
 # applied. Sizes vary and three are portrait, so this fits each inside a 1200px
 # box rather than forcing a width; the min() on either axis is what stops a
 # source smaller than the box being upscaled into softness.
+# The 4th file — the temporomandibular-joint programme screen — is skipped: the
+# clinic asked for it off the page, and generating it anyway would ship 216 KB
+# nothing references. Drop the `continue` and re-add the item to src/i18n.js to
+# bring it back.
 echo "console reshoot..."
 i=1
 for f in "$SRC/xray device/new images"/*.jpeg; do
+  if [ "$i" = 4 ]; then i=$((i + 1)); continue; fi
   ffmpeg -v error -y -i "$f" -map_metadata -1 \
     -vf "scale='min(1200,iw)':'min(1200,ih)':force_original_aspect_ratio=decrease:flags=lanczos" \
     "$OUT/.tmp-console.png"
   cwebp -quiet -q 84 -metadata none "$OUT/.tmp-console.png" -o "$OUT/console-0$i.webp"
   rm -f "$OUT/.tmp-console.png"
+  i=$((i + 1))
+done
+
+
+# --- clinic visitors --------------------------------------------------------
+# The wall of people who have come through the door, dealt as a card deck in
+# the page. Three things about this set decide how it is processed:
+#
+#  - The order is the clinic's own numbering, but three files sit outside it and
+#    are placed by hand. Two originals are both numbered 8 — a phone export and
+#    a full-frame camera capture, of different people — and both are kept, the
+#    phone one at 8 and the camera one after it. `99.jpg` and `122.jpg` were
+#    supplied later and the clinic asked for them at 9 and 10. Three files carry
+#    no position at all — `23424.jpg`, then `DSC06550.jpg` and `773A8850.jpg` —
+#    and are appended in the order they were supplied. So from 9 onward a card's
+#    position is no longer the number on its file, and this array is the only
+#    place that knows the mapping — VISITOR_KINDS in src/i18n.js indexes into
+#    the same order and must be edited with it.
+#
+#    The last two are 33 MB and 14 MB straight off a full-frame body. Nothing in
+#    the pipeline needs to change for them — the crop and scale take each to
+#    around 30 KB — but they are why this step is no longer instant.
+#  - Orientation is mixed: three landscape, five portrait, the rest square. The
+#    deck is a square card, so each is cropped to 1:1 here rather than left to
+#    object-fit — a browser cropping in CSS still downloads the pixels it throws
+#    away, and across twenty-three files that is the whole budget.
+#  - The crop is biased a quarter of the way down the excess, not centred. In a
+#    portrait photograph of a standing person, centring takes the head off.
+#
+# Two widths, 720 and 480, and the page's `srcset` picks. A phone at 2x asks for
+# the 720; a laptop at 1x, where the card is 440px across, takes the 480 and
+# saves half the bytes.
+echo "visitors..."
+VISITORS=(1.jpg 2.jpeg 3.jpg 4.jpeg 5.JPG 6.jpeg 7.jpg 8.jpeg 99.jpg 122.jpg \
+          8.JPG 9.JPG 10.JPG 11.jpg 12.jpg 13.jpg 14.jpeg 15.jpeg 16.jpeg 17.jpg \
+          23424.jpg DSC06550.jpg 773A8850.jpg)
+
+square() {
+  local in="$1" out="$2" w="$3" tmp="$OUT/.tmp-visitor.png"
+  ffmpeg -v error -y -i "$in" -map_metadata -1 \
+    -vf "crop='min(iw,ih)':'min(iw,ih)':'(iw-min(iw,ih))/2':'(ih-min(iw,ih))*0.25',scale=${w}:${w}:flags=lanczos" \
+    -frames:v 1 "$tmp"
+  cwebp -quiet -q 74 -metadata none "$tmp" -o "$out"
+  rm -f "$tmp"
+}
+
+i=1
+for name in "${VISITORS[@]}"; do
+  n=$(printf %02d $i)
+  square "$SRC/clinic visitors/$name" "$OUT/visitor-$n.webp"    720
+  square "$SRC/clinic visitors/$name" "$OUT/visitor-$n-sm.webp" 480
   i=$((i + 1))
 done
 

@@ -10,16 +10,32 @@
 // Three rules keep it from becoming a tax, all inherited from the original:
 //   1. It only exists when the head script opts in (html.intro), so no JS means
 //      no splash — the page is simply there.
-//   2. The lift is a CSS animation, not a JS timer. If the bundle never
-//      arrives, or arrives late, the curtain still leaves on schedule.
+//   2. The lift never waits on the bundle. It is triggered by the same inline
+//      script that raised the curtain — if that script did not run there is no
+//      curtain to lift — and a hard ceiling fires regardless of what loads.
 //   3. prefers-reduced-motion and any repeat visit in the session skip it.
 
-import { strings } from './i18n.js';
+import { HERO, strings } from './i18n.js';
 
-/** How long the curtain holds before it starts to lift. */
-const HOLD_MS = 2000;
-const LIFT_MS = 800;
-const HOLD = `${HOLD_MS}ms`;
+// The curtain used to hold for a flat 2000ms and take 800ms to lift, so every
+// visitor — and every Lighthouse run, which is always a fresh session — watched
+// 2.8s of blank near-black over a hero image that was already decoded. The hold
+// is now a floor rather than a fixed wait: the lift starts as soon as the hero
+// photograph is ready, and MIN_MS only stops it being so quick that the mark
+// flashes past unread.
+//
+// MIN_MS is set against the choreography above it, not picked for feel. The
+// curtain wipes bottom-to-top, and the tagline is the lowest element in the
+// stack — so the tagline is the FIRST thing the wipe erases, not the last. It
+// finishes fading in at 620ms (0.22s delay + 0.40s), and a floor below that
+// destroys the wordmark on its way in, which is exactly what a first cut of
+// this change did.
+//
+// MAX_MS is the ceiling. If an image is slow or never arrives, the curtain
+// still leaves — a visitor must never be held behind it by a stalled request.
+const MIN_MS = 820;
+const MAX_MS = 1500;
+const LIFT_MS = 500;
 const LIFT = `${LIFT_MS}ms`;
 
 export const introHead = () => `<style>
@@ -36,7 +52,12 @@ export const introHead = () => `<style>
         display: grid;
         place-items: center;
         background: #0e0b0a;
-        animation: intro-lift ${LIFT} cubic-bezier(0.16, 1, 0.3, 1) ${HOLD} forwards;
+      }
+      /* The lift is keyed to a class rather than an animation-delay, so the
+         moment it starts can be decided at runtime instead of guessed at build
+         time. */
+      html.intro-on.intro-off .intro {
+        animation: intro-lift ${LIFT} cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
       /* Wiping the bottom edge upward reads as the curtain being drawn up.
          visibility settles it so nothing is left catching pointer events. */
@@ -52,7 +73,7 @@ export const introHead = () => `<style>
 
       .intro__mark {
         width: clamp(56px, 12vw, 76px); height: auto;
-        animation: intro-mark 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: intro-mark 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
       @keyframes intro-mark {
         from { opacity: 0; transform: translateY(14px) scale(0.92); filter: blur(6px); }
@@ -65,13 +86,13 @@ export const introHead = () => `<style>
         border-radius: 2px;
         background: linear-gradient(90deg, #f3b279, #c9895c);
         transform: scaleX(0);
-        animation: intro-rule 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.34s forwards;
+        animation: intro-rule 0.34s cubic-bezier(0.16, 1, 0.3, 1) 0.14s forwards;
       }
       @keyframes intro-rule { to { transform: scaleX(1); } }
 
       .intro__tag {
         width: clamp(190px, 46vw, 300px); height: auto;
-        animation: intro-tag 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+        animation: intro-tag 0.40s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
       }
       @keyframes intro-tag {
         from { opacity: 0; transform: translateY(10px); }
@@ -87,14 +108,47 @@ export const introHead = () => `<style>
           !matchMedia('(prefers-reduced-motion: reduce)').matches &&
           !sessionStorage.getItem('jdc-intro')
         ) {
-          document.documentElement.classList.add('intro-on');
+          var d = document.documentElement;
+          d.classList.add('intro-on');
           sessionStorage.setItem('jdc-intro', '1');
+
+          var t0 = performance.now();
+          var fired = false;
+
           // When the curtain will start lifting, for the page underneath to
-          // wait on. Without this the hero plays its whole entrance behind the
-          // curtain and is already finished by the time anyone can see it.
-          // Set here rather than in the bundle because the curtain's animation
-          // starts at first paint, long before hydration.
-          window.__introLiftAt = performance.now() + ${HOLD_MS};
+          // wait on. Without it the hero plays its whole entrance behind the
+          // curtain and is finished before anyone can see it. Seeded with the
+          // earliest possible moment so anything reading it before the decision
+          // is made still gets a sane answer, then corrected below.
+          window.__introLiftAt = t0 + ${MIN_MS};
+
+          function lift() {
+            if (fired) return;
+            fired = true;
+            // Never before MIN_MS: on a warm cache the image resolves in single
+            // -digit milliseconds and the mark would flash past unread.
+            var wait = Math.max(0, ${MIN_MS} - (performance.now() - t0));
+            window.__introLiftAt = performance.now() + wait;
+            setTimeout(function () { d.classList.add('intro-off'); }, wait);
+          }
+
+          // Not the load event: these two images specifically. The hero is
+          // what the curtain reveals, the tagline is what the curtain is FOR,
+          // and neither the fonts nor the 90KB bundle should hold it up. The
+          // hero resolves off the <head> preload rather than a second request.
+          var pending = 2;
+          function ready() { if (--pending === 0) lift(); }
+          [${JSON.stringify(HERO.src)}, '/img/tagline.png'].forEach(function (src) {
+            var img = new Image();
+            img.onload = ready;
+            img.onerror = ready;
+            img.src = src;
+            if (img.complete) ready();
+          });
+
+          // The ceiling. A stalled or missing photograph must not trap anyone
+          // behind the curtain.
+          setTimeout(lift, ${MAX_MS});
         }
       } catch (e) {}
     </script>`;

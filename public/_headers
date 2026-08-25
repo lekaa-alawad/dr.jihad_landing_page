@@ -1,19 +1,41 @@
-# Cloudflare Pages response headers.
+# Cloudflare response headers.
 #
-# /assets/* is content-hashed by Vite, so it can be cached forever. /fonts and
-# /img are served under fixed names straight from public/, so they get a long
-# but revalidatable life instead — the case photography is expected to change
-# when the client supplies real work, and a year of immutable would strand it.
+# Comments must start at column zero — an indented line inside a block is parsed
+# as a header, not a comment, so every note here sits above the rule it explains.
 
+# /assets/* is content-hashed by Vite, so it can be cached forever.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
+# /img is served under fixed names straight from public/, so it gets a long but
+# revalidatable life instead — the case photography is expected to change when
+# the client supplies real work, and a year of immutable would strand it.
 /img/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+# Gallery media. Fixed names like /img, but far heavier — a poster or a clip
+# re-fetched on every visit is the most expensive miss on the site. These change
+# only when the clinic supplies new footage, which is a deliberate act followed
+# by a deploy, so a week of cache and a month of stale-while-revalidate costs
+# nothing and saves the entire payload on a return visit.
+/media/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# Nothing here should ever be framed. frame-ancestors is the modern form and
+# X-Frame-Options the fallback for older agents; a CSP carrying only
+# frame-ancestors constrains framing and nothing else, so the inline scripts in
+# the page shells are unaffected.
+#
+# HSTS: the apex and www both terminate TLS at Cloudflare, so includeSubDomains
+# is safe today. It is also a promise — any future subdomain must serve HTTPS
+# from the moment it exists, because browsers will refuse to reach it otherwise
+# for a year after their last visit here.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: frame-ancestors 'self'
+  X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

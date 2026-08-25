@@ -3,6 +3,8 @@ import { animate, scroll } from 'motion';
 import { CountUp, SplitLines, SplitWords, Reveal, RevealGroup } from './components/Kinetic.jsx';
 import Seam from './components/Seam.jsx';
 import Gallery from './components/Gallery.jsx';
+import Deck from './components/Deck.jsx';
+import Kit from './components/Kit.jsx';
 import { HERO, casePairs, dialable, strings, waLink } from './i18n.js';
 import './noir.css';
 
@@ -142,6 +144,32 @@ export default function Noir({ lang = 'en' }) {
           </div>
         </section>
 
+        {/* Who the centre is, in its own words — placed between the
+            departments it runs and the numbers behind them, so it explains the
+            list above and introduces the figures below. The nineteen years in
+            the second paragraph are the same nineteen the record counts up to
+            a moment later, which is the point of standing here.
+
+            The seven devices stay behind a button: they are the hardware under
+            the departments already read, and inline they would outrun the two
+            paragraphs that carry the argument. */}
+        <section className="nr__section nr__section--rule" id="about">
+          <div className="nr__wrap nr__about">
+            <SplitWords as="h2" text={t.about.heading} className="nr__h2 nr__h2--sm" />
+            <div>
+              <RevealGroup className="nr__aboutBody" gap={0.08}>
+                {t.about.body.map((p) => <p key={p}>{p}</p>)}
+              </RevealGroup>
+              <Reveal className="nr__kit">
+                <p className="nr__kitLead">{t.about.kit.lead}</p>
+                {/* `t.gallery` only for the close label — the same chrome
+                    string every dialog on the page closes with. */}
+                <Kit kit={t.about.kit} t={t.gallery} />
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         <section className="nr__section" id="record">
           <div className="nr__wrap">
             <SplitWords as="h2" text={t.record.heading} className="nr__h2 nr__h2--sm" />
@@ -152,6 +180,49 @@ export default function Noir({ lang = 'en' }) {
                   <span>{r.label}</span>
                   <CountUp value={r.value} lang={lang} className="nr__val nr__val--num" />
                 </div>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
+
+        {/* The people, before the credentials. A visitor who has read the
+            record now sees who else decided to sit in that chair — which is
+            the one argument on the page the clinic did not have to write. */}
+        <section className="nr__section nr__section--rule" id="visitors">
+          <div className="nr__wrap nr__visitors">
+            <div>
+              <SplitWords as="h2" text={t.visitors.heading} className="nr__h2 nr__h2--sm" />
+              <Reveal><p className="nr__sub">{t.visitors.sub}</p></Reveal>
+            </div>
+            <Reveal>
+              <Deck shots={t.visitors.shots} t={t.visitors} lang={lang} />
+            </Reveal>
+          </div>
+        </section>
+
+        <section className="nr__section nr__section--rule" id="team">
+          <div className="nr__wrap">
+            <SplitWords as="h2" text={t.team.heading} className="nr__h2 nr__h2--sm" />
+            <Reveal><p className="nr__sub">{t.team.sub}</p></Reveal>
+            <RevealGroup className="nr__team" gap={0.07} kind="scale">
+              {t.team.members.map((m) => (
+                <article className="nr__doc" key={m.name}>
+                  {/* Portraits are the one thing here a visitor reads before any
+                      of the words, so the cell holds its 3:4 from first paint —
+                      the placeholders and the real photographs share it. */}
+                  <img
+                    className="nr__docShot"
+                    src={m.photo}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="900"
+                    height="1200"
+                  />
+                  <h3 className="nr__docName">{m.name}</h3>
+                  <p className="nr__docRole">{m.role}</p>
+                  <p className="nr__docBio">{m.bio}</p>
+                </article>
               ))}
             </RevealGroup>
           </div>
@@ -172,7 +243,15 @@ export default function Noir({ lang = 'en' }) {
                   <span className="nr__vals">
                     {c.values.map((v) => (
                       <span className="nr__val" key={v} dir={c.ltr ? 'ltr' : undefined}>
-                        {c.tel ? <a href={`tel:${dialable(v)}`}>{v}</a> : v}
+                        {c.tel ? (
+                          <a href={`tel:${dialable(v)}`}>{v}</a>
+                        ) : c.href ? (
+                          // rel is what stops the opened tab reaching back into
+                          // this one through window.opener
+                          <a href={c.href} target="_blank" rel="noopener noreferrer">{v}</a>
+                        ) : (
+                          v
+                        )}
                       </span>
                     ))}
                     {c.wa && (

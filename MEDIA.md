@@ -18,6 +18,34 @@ bash scripts/media.sh    # needs ffmpeg, sips (macOS) and cwebp
 | `botox/IMG_8672–8675.jpeg` | Injectables | → `filler-0{1..4}.webp` |
 | `laser/IMG_6335.MOV` | Skin laser | → `laser-face-{hi,lo}.mp4` |
 | `laser/IMG_7889.MOV` | Skin laser | → `laser-hair-{hi,lo}.mp4` |
+| `clinic visitors/*.jpg,jpeg,JPG` | Visitors | → `visitor-{01..23}{,-sm}.webp`, all twenty-three in the deck |
+
+### The visitor numbering
+
+The clinic numbered these itself, and the deck follows that numbering as far as
+it goes. Five files sit outside it and are placed by hand, so **from position 9
+down, a card's place in the deck is no longer the number on its file**. The order
+is decided by the `VISITORS` array in `scripts/media.sh` and mirrored by
+`VISITOR_KINDS` in `src/i18n.js` — the two are one list kept in two places and
+neither can be reordered alone.
+
+- **Two files are numbered 8.** `8.jpeg` is a phone export, `8.JPG` a full-frame
+  camera capture, and they are photographs of different people. Both are kept:
+  the phone export holds position 8, the camera frame follows.
+- **`99.jpg` and `122.jpg` were supplied later**, and the clinic asked for them
+  at positions 9 and 10 — which is what pushed `8.JPG` and everything after it
+  two places back.
+- **Three files carry no position at all.** `23424.jpg`, the close-up of a
+  finished smile, then `DSC06550.jpg` and `773A8850.jpg`. They are appended in
+  the order the clinic supplied them, at 21, 22 and 23. The last two are 33 MB
+  and 14 MB straight off a full-frame body; the pipeline takes each to about
+  30 KB, which is why the visitors step is no longer instant.
+
+Each is cropped to a square and delivered at two widths, 720 and 480, because
+the deck's card is square and a browser cropping in CSS still downloads the
+pixels it discards. Twenty-three files at the larger width is about 770 KB; the
+page loads six of them when the deck is approached and one more per deal, so a
+visitor who scrolls past sees a fraction of that.
 
 Nothing was supplied for the other six departments — cosmetic dentistry,
 implants, endodontics, orthodontics, children's dentistry and dental laser. Those
@@ -50,6 +78,15 @@ never presses play downloads none of it — only a poster, and only for the one
 inline gallery.
 
 ## Consent
+
+`visitor-*.webp` is twenty-three identifiable faces, published at full size and with
+no crop that obscures anyone. Several are evidently public figures photographed
+with Dr. Jihad; several others are patients. Written consent to publish is the
+clinic's responsibility and has not been evidenced to this repository. These are
+the most exposed photographs on the site — a face on a marketing page is a claim
+that the person endorses the practice — and any withdrawal means deleting the
+file, removing its entry from `VISITOR_KINDS` in `src/i18n.js`, and re-running
+`scripts/media.sh` so the numbering closes up.
 
 `filler-0*.webp`, `laser-face-*.mp4` and the frames of `laser-hair-*.mp4` are
 photographs and footage of identifiable people — patients and staff. Written

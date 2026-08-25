@@ -44,7 +44,16 @@ export function jsonLd(lang) {
     url: urlFor(lang),
     inLanguage: lang,
     logo: `${origin()}/img/mark.png`,
-    image: `${origin()}${HERO.src}`,
+    // `image` takes a list, and a local listing carrying more than one
+    // photograph of the practice is something Google's own structured-data
+    // guidance asks for by name. The hero leads, because it is also what an
+    // unfurler shows; behind it go the four visitor photographs that have the
+    // clinic itself in the frame. The rest of the deck is nineteen portraits of
+    // near-identical framing, which is not what a knowledge panel is for.
+    image: [
+      `${origin()}${HERO.src}`,
+      ...t.visitors.shots.slice(0, 4).map((shot) => origin() + shot.src),
+    ],
     slogan: t.tagline,
     founder: { '@type': 'Person', name: t.doctor, jobTitle: lang === 'ar' ? 'طبيب أسنان' : 'Dentist' },
     // A service's sub-capabilities (the imaging modalities) are folded into the
@@ -72,6 +81,13 @@ export function jsonLd(lang) {
   // Every number the clinic answers, landlines and mobile alike.
   const numbers = [...(find('phone') ?? []), ...(find('whatsapp') ?? [])].map(dialable);
   if (numbers.length) node.telephone = numbers;
+
+  // `sameAs` is how a profile elsewhere is claimed as the same entity as this
+  // one. Without it the Instagram account and this clinic are two unrelated
+  // things to a search engine; with it they consolidate, and the profile can
+  // surface in the knowledge panel.
+  const social = confirmed.filter((i) => i.href).map((i) => i.href);
+  if (social.length) node.sameAs = social;
 
   // No `openingHours`. The clinic confirmed the times but not which days it
   // keeps them, and the property's grammar has no way to say "these hours, days

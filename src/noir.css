@@ -358,9 +358,15 @@
 .gal__play:hover .gal__playIcon { transform: scale(1.08); }
 .gal__playNote { font-size: 0.8rem; color: var(--fog); max-width: 32ch; line-height: 1.5; }
 
-/* --- the opt-in button and its dialog ------------------------------------- */
+/* --- the opt-in buttons and their dialogs --------------------------------- */
 
-.gal__open {
+/* Two things on the page open over it: a treatment's media, and the list of
+   equipment in the about section. They are the same offer to the visitor, so
+   they are the same button and the same dialog — one declaration, worn by
+   both. Only what is *inside* differs, and that is further down. */
+
+.gal__open,
+.kit__open {
   display: inline-flex; align-items: center; gap: 0.6rem;
   margin-block-start: 1.1rem;
   padding: 0.55rem 1.1rem; border-radius: 999px;
@@ -369,13 +375,16 @@
   border: 1px solid var(--hair);
   transition: background 0.25s, border-color 0.25s, transform 0.25s;
 }
-.gal__open:hover { background: rgba(251, 247, 243, 0.07); border-color: var(--fog); transform: translateY(-1px); }
-.gal__openCount {
+.gal__open:hover,
+.kit__open:hover { background: rgba(251, 247, 243, 0.07); border-color: var(--fog); transform: translateY(-1px); }
+.gal__openCount,
+.kit__count {
   font-size: 0.72rem; font-weight: 700; color: var(--peach);
   padding-inline-start: 0.6rem; border-inline-start: 1px solid var(--hair);
 }
 
-.gal__dialog {
+.gal__dialog,
+.kit__dialog {
   width: min(94vw, 1000px);
   max-height: 88vh;
   /* The UA centres a modal dialog with `margin: auto`; the reset at the top of
@@ -386,22 +395,27 @@
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--hair);
   overflow: auto; overscroll-behavior: contain;
 }
-.gal__dialog::backdrop { background: rgba(8, 6, 5, 0.82); backdrop-filter: blur(6px); }
-.gal__dialogBar {
+.gal__dialog::backdrop,
+.kit__dialog::backdrop { background: rgba(8, 6, 5, 0.82); backdrop-filter: blur(6px); }
+.gal__dialogBar,
+.kit__bar {
   position: sticky; top: 0; z-index: 3;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: 1rem clamp(1rem, 3vw, 1.6rem);
   background: #14100e; border-bottom: 1px solid var(--hair);
 }
-.gal__dialogBar h4 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
-.gal__close {
+.gal__dialogBar h4,
+.kit__bar h4 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
+.gal__close,
+.kit__close {
   width: 34px; height: 34px; flex: none;
   display: grid; place-items: center;
   font: inherit; font-size: 1.4rem; line-height: 1; cursor: pointer;
   color: var(--light); background: transparent;
   border: 1px solid var(--hair); border-radius: 50%;
 }
-.gal__close:hover { background: rgba(251, 247, 243, 0.09); }
+.gal__close:hover,
+.kit__close:hover { background: rgba(251, 247, 243, 0.09); }
 
 /* Columns, not a grid. The dialog now mixes an upright clip with landscape
    console shots and portrait ones, and in a grid the row height is set by the
@@ -426,6 +440,68 @@
   padding: 0 clamp(1rem, 3vw, 1.6rem) clamp(1rem, 3vw, 1.6rem);
   color: var(--fog); font-size: 0.85rem; line-height: 1.6; max-width: 62ch;
 }
+
+/* --- about: the centre in its own words ----------------------------------- */
+
+/* Heading in one column, the prose in the other — the same split the visitors
+   section uses, so the two text-first sections on the page are built the same
+   way. Below 1000px it stacks, and the heading simply leads. */
+.nr__about { display: grid; gap: clamp(1.4rem, 4vw, 3.5rem); }
+@media (min-width: 1000px) {
+  .nr__about { grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr); align-items: start; }
+}
+.nr__about .nr__h2 { margin-block-end: 0; }
+
+.nr__aboutBody { display: grid; gap: 1.1rem; }
+.nr__aboutBody p {
+  color: var(--light);
+  /* Larger than a caption and lighter than a heading: these two paragraphs are
+     the only sustained reading on the page, and they carry the claims the rest
+     of it only demonstrates. */
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.75;
+  max-width: 62ch;
+}
+
+/* The bridge sentence and the button that answers it. The rule above them
+   separates the equipment from the prose without starting a new section. */
+.nr__kit {
+  margin-block-start: clamp(1.8rem, 4vw, 2.6rem);
+  padding-block-start: clamp(1.4rem, 3vw, 2rem);
+  border-top: 1px solid var(--hair);
+}
+.nr__kitLead { color: var(--fog); font-size: 0.98rem; line-height: 1.7; max-width: 52ch; }
+
+/* --- the equipment dialog ------------------------------------------------- */
+
+/* Narrower than the media dialog: that one is packing photographs into
+   columns, this one is a measure of text, and a 1000px line is unreadable. */
+.kit__dialog { width: min(94vw, 720px); }
+
+.kit__list { list-style: none; padding: clamp(0.4rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.6rem) clamp(1.2rem, 3vw, 1.8rem); }
+.kit__item { padding-block: 1.1rem; border-bottom: 1px solid var(--hair); }
+.kit__item:last-child { border-bottom: 0; padding-block-end: 0; }
+
+.kit__name {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.6rem;
+  font-family: var(--display); font-weight: 600;
+  font-size: 1.05rem; line-height: 1.35;
+  color: var(--peach);
+  margin-block-end: 0.4rem;
+}
+[dir='rtl'] .kit__name { line-height: 1.6; }
+
+/* The make, set apart from the name it follows. Tracked-out Latin small caps
+   are safe here even under RTL, because the span is Latin text either way. */
+.kit__model {
+  font-family: var(--text);
+  font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fog);
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+.kit__note { color: var(--fog); font-size: 0.94rem; line-height: 1.65; max-width: 58ch; }
 
 .nr__rows--tight { margin-block-start: 1.5rem; }
 .nr__recRow {
@@ -465,3 +541,211 @@
    figures would reflow the row on almost every one of them, so the counted
    values are locked to tabular widths. */
 .nr__val--num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+
+/* --- the dentists --------------------------------------------------------- */
+
+/* auto-fill, so the row count follows the width rather than a breakpoint
+   guess — six cards land as 3×2 on a laptop and 2×3 on a tablet. */
+.nr__team {
+  display: grid;
+  gap: clamp(1.6rem, 3.4vw, 2.6rem) clamp(1.1rem, 2.4vw, 2rem);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin-block-start: 2.4rem;
+}
+
+.nr__doc { display: flex; flex-direction: column; }
+
+.nr__docShot {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 3 / 4; object-fit: cover;
+  border-radius: 10px;
+  background: var(--raise);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  margin-block-end: 1.1rem;
+}
+
+/* The names carry the display face, like every other heading on the page. At
+   this size Diwani needs the extra leading its ascenders were drawn for. */
+.nr__docName {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+  line-height: var(--display-lead-sm);
+  letter-spacing: var(--display-track-sm);
+}
+[dir='rtl'] .nr__docName { line-height: 1.5; }
+
+.nr__docRole {
+  margin-block-start: 0.3rem;
+  color: var(--peach);
+  font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+/* Tracked-out caps are a Latin device; Arabic joins, so both are dropped. */
+[dir='rtl'] .nr__docRole {
+  letter-spacing: 0; text-transform: none; font-size: 0.88rem;
+}
+
+.nr__docBio {
+  margin-block-start: 0.7rem;
+  color: var(--fog);
+  font-size: 0.92rem; line-height: 1.65;
+}
+
+/* --- the visitor deck ----------------------------------------------------- */
+
+.nr__visitors { display: grid; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+@media (min-width: 1000px) {
+  .nr__visitors { grid-template-columns: minmax(0, 1fr) auto; }
+}
+.nr__visitors .nr__sub { margin-block-end: 0; }
+
+/* The fan's geometry lives here, not in the component, because both layers need
+   it: JavaScript animates the cards to these offsets and CSS lays out the same
+   fan for the frames before hydration. One declaration, read by both.
+
+   It also has to shrink. `.nr` clips its own horizontal overflow, so on a phone
+   the desktop spill of 126px put the back of the fan under the edge of the
+   screen and simply cut it off. */
+.nr__deck {
+  --deck-dx: 42px;
+  --deck-dy: 40px;
+  --deck-stage: min(78vw, 400px);
+  /* Room below the front card for its own shadow, and the distance a leaving
+     card travels before the clip takes it. */
+  --deck-sill: 56px;
+
+  inline-size: fit-content;
+  margin-inline: auto;
+}
+
+/* The window the deck is dealt inside.
+ *
+ * A card leaves by sliding straight down at full opacity, and something has to
+ * stop it: without this it would slide over the section below, and fading it
+ * out instead — which is what the first cut of this did — leaves it hanging
+ * half-transparent on top of the deck with the next photograph showing through
+ * it. Two images at once is not a card being dealt, it is a broken dissolve.
+ *
+ * The fan opens upward and toward the inline end, so the padding reserves that
+ * spill inside the window; only the bottom edge actually cuts anything. Logical
+ * properties, so the reserved side follows the direction the fan opens.
+ */
+.nr__deckClip {
+  overflow: hidden;
+  padding-block-start: calc(3 * var(--deck-dy));
+  padding-inline-end: calc(3 * var(--deck-dx));
+  padding-block-end: var(--deck-sill);
+}
+
+/* Below this width the section is one column and the deck has the viewport to
+   itself, minus the wrap's own padding. A tighter fan and a slightly smaller
+   card is what fits inside it. */
+@media (max-width: 620px) {
+  .nr__deck {
+    --deck-dx: 22px;
+    --deck-dy: 22px;
+    --deck-stage: min(72vw, 400px);
+  }
+}
+
+/* The 3D scene. `perspective` here and `preserve-3d` on the cards is what lets
+   the browser sort them by their own translateZ every frame — the deck needs no
+   z-index at all, and a card sinking to the back travels behind the fan instead
+   of snapping behind it. */
+.nr__deckStage {
+  position: relative;
+  inline-size: var(--deck-stage);
+  aspect-ratio: 1;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+/* The fan is laid out in CSS as well as in JavaScript, and the two agree. This
+   is what a visitor sees before hydration and what one without JavaScript sees
+   for good — four cards, dealt, holding their square. The animation reads these
+   as its starting values, so nothing jumps when it takes over. */
+.nr__card {
+  position: absolute; inset: 0;
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--raise);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.85), inset 0 0 0 1px var(--hair);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform: skewY(4deg);
+  opacity: 0;
+}
+.nr__card:nth-child(1) { opacity: 1; }
+.nr__card:nth-child(2) { transform: translate3d(var(--deck-dx), calc(-1 * var(--deck-dy)), calc(-1.5 * var(--deck-dx))) skewY(4deg); opacity: 1; }
+.nr__card:nth-child(3) { transform: translate3d(calc(2 * var(--deck-dx)), calc(-2 * var(--deck-dy)), calc(-3 * var(--deck-dx))) skewY(4deg); opacity: 1; }
+.nr__card:nth-child(4) { transform: translate3d(calc(3 * var(--deck-dx)), calc(-3 * var(--deck-dy)), calc(-4.5 * var(--deck-dx))) skewY(4deg); opacity: 1; }
+
+[dir='rtl'] .nr__card { transform: skewY(-4deg); }
+[dir='rtl'] .nr__card:nth-child(2) { transform: translate3d(calc(-1 * var(--deck-dx)), calc(-1 * var(--deck-dy)), calc(-1.5 * var(--deck-dx))) skewY(-4deg); }
+[dir='rtl'] .nr__card:nth-child(3) { transform: translate3d(calc(-2 * var(--deck-dx)), calc(-2 * var(--deck-dy)), calc(-3 * var(--deck-dx))) skewY(-4deg); }
+[dir='rtl'] .nr__card:nth-child(4) { transform: translate3d(calc(-3 * var(--deck-dx)), calc(-3 * var(--deck-dy)), calc(-4.5 * var(--deck-dx))) skewY(-4deg); }
+
+/* No `will-change` here. Only five cards are ever in motion, but which five
+   rotates through all nineteen as the deck deals, and a selector can only name
+   a fixed position in the source order — after the first deal the hint would be
+   sitting on cards standing still. The component moves it with the window. */
+
+.nr__cardShot {
+  display: block;
+  inline-size: 100%; block-size: 100%;
+  object-fit: cover;
+}
+
+.nr__deckBar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.55rem;
+  margin-block-start: 0.4rem;
+}
+
+.nr__deckBtn {
+  inline-size: 2.4rem; block-size: 2.4rem;
+  display: grid; place-items: center;
+  border: 1px solid var(--hair); border-radius: 999px;
+  background: none; color: var(--light);
+  font-size: 1.35rem; line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.nr__deckBtn:hover { color: var(--peach); border-color: var(--peach); }
+.nr__deckBtn:focus-visible { outline: 2.5px solid var(--peach); outline-offset: 3px; }
+
+/* No RTL rule for the chevrons. U+2039 and U+203A carry Unicode's
+   Bidi_Mirrored property, so the browser already draws them the other way round
+   inside an RTL paragraph — mirroring them again in CSS turned them back, and
+   under Arabic the deck's "previous" pointed at the card it had just left. */
+
+/* Two bars while it is running, a triangle while it is stopped — drawn from
+   borders so the control carries no icon font and no SVG. */
+.nr__deckBtn--pause span {
+  inline-size: 10px; block-size: 12px;
+  border-inline: 3px solid currentColor;
+}
+.nr__deckBtn--pause[aria-pressed='true'] span {
+  inline-size: 0; block-size: 0;
+  border: 0;
+  border-block: 6px solid transparent;
+  border-inline-start: 10px solid currentColor;
+  margin-inline-start: 3px;
+}
+
+/* The count is a flex row of three items, not one string, and that is a bidi
+   fix rather than a layout preference. Arabic-Indic digits are Arabic Numbers
+   to the bidi algorithm, which treats them as right-to-left for the purpose of
+   the neutral characters beside them — so "١ / ١٩" in a single text node has
+   its two numbers swapped by the browser, and the Arabic page read 19 / 1 no
+   matter what `dir` the span carried. Flex items are ordered by the container's
+   own direction and never reordered by bidi. */
+.nr__deckNum {
+  display: flex; gap: 0.3rem;
+  margin-inline-start: 0.5rem;
+  color: var(--fog);
+  font-size: 0.78rem; letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
