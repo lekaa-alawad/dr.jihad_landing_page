@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { animate, scroll } from 'motion';
 import { CountUp, SplitLines, SplitWords, Reveal, RevealGroup } from './components/Kinetic.jsx';
 import Seam from './components/Seam.jsx';
@@ -7,6 +7,24 @@ import Deck from './components/Deck.jsx';
 import Kit from './components/Kit.jsx';
 import { HERO, casePairs, dialable, strings, waLink } from './i18n.js';
 import './noir.css';
+
+/**
+ * A section standfirst, with `\n` meaning a line break.
+ *
+ * Every other piece of multi-line copy in i18n.js is an array joined on `\n`,
+ * and SplitWords already renders that as a <br>. A plain <p> collapses it to a
+ * space instead, so a sub written on two lines arrived as one. This makes the
+ * newline mean the same thing here as it does everywhere else in the copy.
+ */
+function Sub({ text }) {
+  return (
+    <p className="nr__sub">
+      {text.split('\n').map((line, i) => (
+        <Fragment key={i}>{i > 0 && <br />}{line}</Fragment>
+      ))}
+    </p>
+  );
+}
 
 /**
  * DIRECTION 4 — NOIR (my pick)
@@ -107,7 +125,7 @@ export default function Noir({ lang = 'en' }) {
         <section className="nr__section" id="cases">
           <div className="nr__wrap">
             <SplitWords as="h2" text={t.cases.heading} className="nr__h2" />
-            <Reveal><p className="nr__sub">{t.cases.sub}</p></Reveal>
+            <Reveal><Sub text={t.cases.sub} /></Reveal>
             <Reveal className="nr__lead">
               <Seam {...casePairs[0]} label={t.cases.labels[0]} theme="seam--nr" t={t.cases} />
             </Reveal>
@@ -130,7 +148,12 @@ export default function Noir({ lang = 'en' }) {
                       imaging modalities stay in the right-hand column with the
                       sentence that introduces them. */}
                   <div>
-                    <p>{item.note}</p>
+                    {/* The clinic writes these as two or three sentences, one
+                        per line, and they stay that way — `\n` is a paragraph
+                        break here rather than the line break it means in the
+                        standfirsts, because at this length a run-on block is
+                        what stops the section being readable. */}
+                    {String(item.note).split('\n').map((line, i) => <p key={i}>{line}</p>)}
                     {item.list && (
                       <ul className="nr__subList">
                         {item.list.map((sub) => <li key={sub}>{sub}</li>)}
@@ -173,7 +196,7 @@ export default function Noir({ lang = 'en' }) {
         <section className="nr__section" id="record">
           <div className="nr__wrap">
             <SplitWords as="h2" text={t.record.heading} className="nr__h2 nr__h2--sm" />
-            <Reveal><p className="nr__sub">{t.record.sub}</p></Reveal>
+            <Reveal><Sub text={t.record.sub} /></Reveal>
             <RevealGroup className="nr__rows nr__rows--tight" gap={0.05}>
               {t.record.items.map((r) => (
                 <div className="nr__recRow" key={r.label}>
@@ -192,7 +215,7 @@ export default function Noir({ lang = 'en' }) {
           <div className="nr__wrap nr__visitors">
             <div>
               <SplitWords as="h2" text={t.visitors.heading} className="nr__h2 nr__h2--sm" />
-              <Reveal><p className="nr__sub">{t.visitors.sub}</p></Reveal>
+              <Reveal><Sub text={t.visitors.sub} /></Reveal>
             </div>
             <Reveal>
               <Deck shots={t.visitors.shots} t={t.visitors} lang={lang} />
@@ -203,12 +226,12 @@ export default function Noir({ lang = 'en' }) {
         <section className="nr__section nr__section--rule" id="team">
           <div className="nr__wrap">
             <SplitWords as="h2" text={t.team.heading} className="nr__h2 nr__h2--sm" />
-            <Reveal><p className="nr__sub">{t.team.sub}</p></Reveal>
+            <Reveal><Sub text={t.team.sub} /></Reveal>
             <RevealGroup className="nr__team" gap={0.07} kind="scale">
               {t.team.members.map((m) => (
                 <article className="nr__doc" key={m.name}>
                   {/* Portraits are the one thing here a visitor reads before any
-                      of the words, so the cell holds its 3:4 from first paint —
+                      of the words, so the cell holds its 9:16 from first paint —
                       the placeholders and the real photographs share it. */}
                   <img
                     className="nr__docShot"
@@ -217,11 +240,19 @@ export default function Noir({ lang = 'en' }) {
                     loading="lazy"
                     decoding="async"
                     width="900"
-                    height="1200"
+                    height="1600"
                   />
                   <h3 className="nr__docName">{m.name}</h3>
-                  <p className="nr__docRole">{m.role}</p>
-                  <p className="nr__docBio">{m.bio}</p>
+                  {/* All three are optional, and a confirmed entry is why. The
+                      five invented members carry a role and a biography because
+                      both were written to fill the card; the one real member
+                      carries the credential line the clinic supplied and no
+                      biography, because none was supplied. An empty <p> in its
+                      place would leave the card's own spacing describing a
+                      sentence that is not there. */}
+                  {m.role && <p className="nr__docRole">{m.role}</p>}
+                  {m.credential && <p className="nr__docCred">{m.credential}</p>}
+                  {m.bio && <p className="nr__docBio">{m.bio}</p>}
                 </article>
               ))}
             </RevealGroup>

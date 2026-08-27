@@ -60,6 +60,13 @@ export function SplitLines({ lines, className = '', delay = 0, afterIntro = fals
  * choreography — and the string a screen reader hears is the original, newlines
  * and all, which HTML collapses to spaces.
  */
+/** A Latin letter, and an Arabic one — together they find the case that needs
+ *  fixing: a Latin island inside a right-to-left line. An all-Latin heading
+ *  needs no marking at all, and marking it would put a `dir` on every word of
+ *  the English page for nothing. */
+const LATIN = /[A-Za-z]/;
+const RTL = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
 export function SplitWords({ text, className = '', delay = 0, afterIntro = false, as: Tag = 'p' }) {
   const ref = useRef(null);
 
@@ -86,6 +93,8 @@ export function SplitWords({ text, className = '', delay = 0, afterIntro = false
     );
   }, [text, delay, afterIntro]);
 
+  const isolate = (w) => RTL.test(text) && LATIN.test(w);
+
   return (
     <Tag className={className} ref={ref}>
       <span className="vh">{text}</span>
@@ -97,7 +106,13 @@ export function SplitWords({ text, className = '', delay = 0, afterIntro = false
               // the space is a text node BETWEEN spans: inside an inline-block
               // it gets trimmed and every word runs together
               <Fragment key={i}>
-                <span className="kin__w">{w}</span>{' '}
+                {/* A word carrying Latin letters is marked as its own LTR run.
+                    Each of these spans is an inline-block, so it is already its
+                    own bidi context, and inside an Arabic heading that context
+                    is RTL — which mirrors any bracket around the word, printing
+                    `(slider)` as `)slider(`. The same rule the equipment makes
+                    are marked by in Kit.jsx. */}
+                <span className="kin__w" dir={isolate(w) ? 'ltr' : undefined}>{w}</span>{' '}
               </Fragment>
             ))}
           </Fragment>

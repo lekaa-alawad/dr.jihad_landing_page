@@ -90,6 +90,11 @@ function Frame({ item, t, eager = false }) {
           width={item.w}
           height={item.h}
         />
+        {/* Sits over the photograph rather than under it. The cell is a fixed
+            ratio with `overflow: hidden`, so a caption in normal flow is simply
+            clipped — and giving the figure room for one would mean every cell
+            reserving that room, including the dozen that carry no label. */}
+        {item.label && <figcaption className="gal__cap">{item.label}</figcaption>}
       </figure>
     );
   }
@@ -119,7 +124,7 @@ function Frame({ item, t, eager = false }) {
 }
 
 export default function Gallery({ gallery, t }) {
-  const { mode, items } = gallery;
+  const { mode, items, pairs, more } = gallery;
   const dialogRef = useRef(null);
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -170,9 +175,25 @@ export default function Gallery({ gallery, t }) {
           <span className="vh">{t.close}</span>
         </button>
       </div>
-      <div className={`gal gal--dialog gal--n${items.length}`}>
+      {/* `pairs` lays the set out two across instead of packing it by height,
+          because a before and its after only read as a comparison when they are
+          level with each other. The items are therefore ordered before, after,
+          before, after — a row of the grid is one view of one mouth, twice. */}
+      <div className={pairs ? 'gal gal--dialog gal--pairs' : `gal gal--dialog gal--n${items.length}`}>
         {items.map((it) => <Frame key={it.video || it.image} item={it} t={t} eager />)}
       </div>
+      {/* A second set, from a different patient and a different camera, kept
+          under its own heading. Run into the grid above it would read as more
+          of the first case, which would be a claim about someone's treatment
+          that the photographs do not support. */}
+      {more && (
+        <>
+          <h5 className="gal__group">{more.title}</h5>
+          <div className="gal gal--dialog gal--row">
+            {more.items.map((it) => <Frame key={it.video || it.image} item={it} t={t} eager />)}
+          </div>
+        </>
+      )}
       {gallery.note && <p className="gal__note">{gallery.note}</p>}
     </dialog>
   );
@@ -187,7 +208,7 @@ export default function Gallery({ gallery, t }) {
         onClick={() => setOpen(true)}
       >
         {gallery.see ?? t.see}
-        <span className="gal__openCount">{items.length}</span>
+        <span className="gal__openCount">{items.length + (more?.items.length ?? 0)}</span>
       </button>
 
       {/* Rendered only once opened, so nothing in it — not a poster, not an

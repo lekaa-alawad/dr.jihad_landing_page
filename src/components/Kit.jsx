@@ -49,6 +49,21 @@ export default function Kit({ kit, t }) {
       <ul className="kit__list">
         {kit.items.map((d) => (
           <li className="kit__item" key={d.name}>
+            {/* The dialog is only mounted once the button is pressed, so these
+                are already deferred by not existing — `lazy` on top of that
+                would hold back the very pictures the press asked for. Real
+                dimensions so the row holds its height before the bytes land. */}
+            {d.photo && (
+              <img
+                className="kit__shot"
+                src={d.photo}
+                alt={d.alt}
+                width={d.w}
+                height={d.h}
+                decoding="async"
+              />
+            )}
+            <div className="kit__body">
             <h5 className="kit__name">
               {d.name}
               {/* A Latin make inside an Arabic line reorders unless it is
@@ -58,7 +73,12 @@ export default function Kit({ kit, t }) {
                   the sentence. */}
               {d.model && <span className="kit__model" dir="ltr">{d.model}</span>}
             </h5>
-            <p className="kit__note">{d.note}</p>
+            {/* Two of these carry a second sentence, so `\n` is a paragraph
+                break here as it is in the treatment rows. */}
+            {String(d.note).split('\n').map((line, i) => (
+              <p className="kit__note" key={i}>{line}</p>
+            ))}
+            </div>
           </li>
         ))}
       </ul>

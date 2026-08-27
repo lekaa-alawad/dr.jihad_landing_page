@@ -10,6 +10,10 @@
 // medical clinic: they must be replaced with confirmed information before
 // launch. Search for PLACEHOLDER.
 //
+// The team section used to be listed here too — six invented dentists. It no
+// longer is: every name and qualification in it came from the clinic, replaced
+// one at a time. One portrait is still missing; search for !! PORTRAIT.
+//
 // The nine departments, the imaging list, the `record` figures and every row in
 // `reach` came from the clinic itself and are confirmed.
 //
@@ -125,13 +129,13 @@ export const strings = {
     ],
 
     cases: {
-      heading: 'Every seam remembers a hand.',
-      sub: 'Drag the seam. Above it the work as it stands, below it as it came.',
-      before: 'As it came',
-      after: 'As it stands',
+      heading: 'Every slider, on every picture, keeps the trace of the hand that reached this result.',
+      sub: 'Drag the slider. Above it the final touch, below it the first visit.',
+      before: 'The first visit',
+      after: 'The final touch',
       caseWord: 'Case',
-      handle: 'drag to move the seam',
-      compare: 'the same patient before and after treatment at the clinic. Drag the seam to compare.',
+      handle: 'drag to move the slider',
+      compare: 'the same patient before and after treatment at the clinic. Drag the slider to compare.',
       shown: 'of the finished result shown',
       // PLACEHOLDER
       labels: [
@@ -149,34 +153,112 @@ export const strings = {
       items: [
         {
           name: 'Cosmetic dentistry',
-          note: 'Veneers, whitening and smile design — shade-matched to the face it belongs to.',
+          note: [
+            'We design smiles that complement each patient’s unique facial features.',
+            'Every smile is carefully planned according to tooth shape, colour, facial proportions, and even the patient’s natural way of speaking and smiling — creating a result that feels balanced, harmonious, and personal.',
+          ].join('\n'),
           lead: true,
         },
         {
           name: 'Dental implants',
-          note: 'A permanent foundation: planning, placement and the crown that sits on top.',
+          note: [
+            'Comprehensive implant treatment from beginning to end.',
+            'Our care includes detailed treatment planning, implant placement, associated surgical procedures such as bone or gum grafting when required, and the final prosthetic restoration.',
+            'From planning to placement — and from surgery to the final smile — every stage is managed within one integrated treatment plan.',
+          ].join('\n'),
           lead: true,
         },
         {
           name: 'Endodontics',
-          note: 'Root canal treatment and retreatment, worked under magnification.',
+          note: [
+            'We provide advanced root canal treatment and retreatment using modern canal preparation systems, thermoplastic obturation technology, and microscopic magnification.',
+            'These technologies allow our specialists to work with greater precision, particularly in complex endodontic cases.',
+          ].join('\n'),
           lead: true,
         },
         {
           name: 'Orthodontics',
-          note: 'Fixed braces and clear aligners, monitored to the last millimetre.',
+          note: [
+            'Every orthodontic treatment plan is tailored to the patient’s age, dental condition, facial development, and individual needs.',
+            'Treatment options may include functional appliances, metal braces, ceramic braces and Invisalign® clear aligners.',
+            'Every stage of treatment is carefully monitored and adjusted — down to the final fraction of a millimetre.',
+          ].join('\n'),
+          gallery: {
+            mode: 'dialog',
+            title: 'One case, start to finish',
+            // Ordered before, after, before, after — the grid reads across, so
+            // a row is one view photographed twice. See `pairs` in Gallery.jsx.
+            pairs: true,
+            items: [
+              { image: '/media/ortho-before-01.webp', w: 1100, h: 498, label: 'Before treatment — front bite', alt: 'Intraoral photograph before orthodontic treatment, the front bite' },
+              { image: '/media/ortho-after-01.webp',  w: 1100, h: 498, label: 'After treatment — front bite', alt: 'The same view after orthodontic treatment, the front bite' },
+              { image: '/media/ortho-before-02.webp', w: 1100, h: 618, label: 'Before treatment — right side', alt: 'Intraoral photograph before orthodontic treatment, the right side' },
+              { image: '/media/ortho-after-02.webp',  w: 1100, h: 618, label: 'After treatment — right side', alt: 'The same view after orthodontic treatment, the right side' },
+              { image: '/media/ortho-before-03.webp', w: 1100, h: 612, label: 'Before treatment — left side', alt: 'Intraoral photograph before orthodontic treatment, the left side' },
+              { image: '/media/ortho-after-03.webp',  w: 1100, h: 612, label: 'After treatment — left side', alt: 'The same view after orthodontic treatment, the left side' },
+              { image: '/media/ortho-before-04.webp', w: 1100, h: 822, label: 'Before treatment — upper arch', alt: 'Intraoral photograph before orthodontic treatment, the upper arch' },
+              { image: '/media/ortho-after-04.webp',  w: 1100, h: 822, label: 'After treatment — upper arch', alt: 'The same view after orthodontic treatment, the upper arch' },
+              { image: '/media/ortho-before-05.webp', w: 1100, h: 758, label: 'Before treatment — lower arch', alt: 'Intraoral photograph before orthodontic treatment, the lower arch' },
+              { image: '/media/ortho-after-05.webp',  w: 1100, h: 758, label: 'After treatment — lower arch', alt: 'The same view after orthodontic treatment, the lower arch' },
+            ],
+            more: {
+              title: 'A second case, photographed close',
+              items: [
+                { image: '/media/ortho-close-01.webp', w: 1100, h: 702, alt: 'Close-range intraoral photograph of the side teeth in occlusion' },
+                { image: '/media/ortho-close-02.webp', w: 1100, h: 746, alt: 'Close-range intraoral photograph of the side teeth in occlusion' },
+                { image: '/media/ortho-close-03.webp', w: 1100, h: 634, alt: 'Close-range intraoral photograph of the side teeth in occlusion' },
+              ],
+            },
+            note: 'The first ten photographs are one patient, in the five standard views, before treatment and after it. The last three are a different patient and a different camera, and are not a before-and-after of the case above.',
+          },
         },
         {
           name: "Children's dentistry",
-          note: 'Care from the first tooth: prevention, fillings and early guidance.',
+          note: [
+            'Our paediatric dental care begins even before the eruption of the first tooth.',
+            'From preventive care and early guidance to comprehensive dental treatment, we provide children with continuous care throughout every stage of their dental development.',
+            'Our goal is to create a positive, comfortable experience while building the foundations for lifelong oral health.',
+          ].join('\n'),
+          // !! CONSENT — children. Seven photographs of nine identifiable
+          // children and one teenager, faces in frame, published at full size.
+          // Nothing in this repository evidences that the clinic holds the
+          // guardians' written consent to publish them. scripts/predeploy.mjs
+          // names this before every deploy; the marker above is what it looks
+          // for, and removing it is a statement that the consent exists.
+          gallery: {
+            mode: 'dialog',
+            title: 'Children at the clinic',
+            // Not the default "See results". These are visits, not outcomes —
+            // nothing in the set is a before or an after, and calling them
+            // results would be a claim about seven children's treatment.
+            see: 'See the photographs',
+            items: [
+              { image: '/media/kids-01.webp', w: 658, h: 1200, alt: 'A young patient sitting with the paediatric dentist in the clinic' },
+              { image: '/media/kids-02.webp', w: 675, h: 1200, alt: 'The paediatric dentist carrying a toddler in the yellow treatment room' },
+              { image: '/media/kids-03.webp', w: 675, h: 1200, alt: 'Two boys in football shirts either side of the paediatric dentist, both giving a thumbs up' },
+              { image: '/media/kids-04.webp', w: 675, h: 1200, alt: 'The paediatric dentist with two patients outside the imaging room' },
+              { image: '/media/kids-05.webp', w: 675, h: 1200, alt: 'A girl holding a balloon beside the paediatric dentist in the treatment room' },
+              { image: '/media/kids-06.webp', w: 900, h: 1200, alt: 'The paediatric dentist with three small girls under the clinic sign in reception' },
+              { image: '/media/kids-07.webp', w: 900, h: 1200, alt: 'A girl holding a storybook, sitting with the paediatric dentist' },
+            ],
+          },
         },
         {
+          // !! UNCONFIRMED COPY — the clinic's write-up covers eight departments
+          // and the site runs nine. Asked, the clinic said the dental laser had
+          // been missed rather than retired, so the row stays — but this note is
+          // the only one on the page not written by the clinic. It is the short
+          // line an earlier pass wrote, kept rather than replaced with anything
+          // invented. Swap it for their paragraph when it arrives.
           name: 'Dental laser',
           note: 'Gum reshaping, soft-tissue work and laser-assisted whitening.',
         },
         {
           name: 'Injectables — botox & filler',
-          note: 'Administered at the clinic, alongside the dental work.',
+          note: [
+            'We provide a full range of facial injectable treatments, including Botox® and dermal fillers, for both therapeutic and aesthetic purposes.',
+            'Every procedure is performed with a refined approach focused on enhancing the patient’s features while preserving the natural character, proportions, and expressions of the face.',
+          ].join('\n'),
           gallery: {
             mode: 'dialog',
             title: 'Lip filler, treated at the clinic',
@@ -191,7 +273,10 @@ export const strings = {
         },
         {
           name: 'Skin laser & hair removal',
-          note: 'Cosmetic skin treatment on the same visit, at the same clinic.',
+          note: [
+            'Our laser hair removal treatments follow precise clinical protocols and are performed using internationally recognised advanced technology.',
+            'Every treatment plan is customised according to the patient’s skin and hair characteristics, with the goal of achieving safe, effective, and long-lasting results.',
+          ].join('\n'),
           gallery: {
             mode: 'dialog',
             title: 'Skin laser at the clinic',
@@ -203,8 +288,10 @@ export const strings = {
         },
         {
           name: 'Radiographic imaging',
-          note:
-            'A department of its own, built around the Carestream system — so the images a treatment plan depends on are taken here, not somewhere else:',
+          note: [
+            'The centre includes a dedicated diagnostic imaging department equipped with advanced Carestream technology.',
+            'The system provides a wide range of imaging options to support accurate diagnosis and comprehensive treatment planning, including:',
+          ].join('\n'),
           list: [
             'Panoramic imaging of both jaws',
             'Three-dimensional imaging for implants and endodontics',
@@ -253,6 +340,8 @@ export const strings = {
         'The centre of Dr. Jihad Alrashed for facial and dental aesthetics is among the first in Syria to offer specialist treatment to the highest academic standards, with the newest medical equipment in dentistry and skin care, and within a working environment held to the highest levels of sterilisation.',
         'Experience of more than nineteen years has built an integrated team of doctors, to set the treatment plan best suited to every patient who decides to be in our care — until we reach with them the best treatment result they can be given.',
       ],
+      // !! STOCK IMAGERY — the seven photographs below are manufacturer
+      // renders, not this clinic's own units. See MEDIA.md.
       kit: {
         lead: 'And to make certain that result is reached, the centre has been equipped with the newest specialist devices:',
         see: 'The equipment',
@@ -263,33 +352,70 @@ export const strings = {
         items: [
           {
             name: 'Diode laser',
-            note: 'So that surgical work on the gums — excision or curettage — is done with the least trauma and the least bleeding possible.',
+            photo: '/media/kit-diode.webp',
+            w: 720,
+            h: 900,
+            alt: 'The clinic’s diode laser unit and its handpiece',
+            note: [
+            'Our diode laser enables precise soft-tissue procedures, including gingival cutting and curettage, while minimising tissue trauma and bleeding.',
+            'It can also support faster wound healing, and is used in the management of a wide range of temporomandibular joint (TMJ) disorders.',
+          ].join('\n'),
           },
           {
-            name: 'Piezo unit',
-            note: 'So that bone cutting during an extraction or an implant is done safely, without any trauma to the vessels or the nerves in the working field.',
+            name: 'Piezosurgery unit',
+            photo: '/media/kit-piezo.webp',
+            w: 720,
+            h: 900,
+            alt: 'The piezosurgery unit, its handpiece and cutting tips',
+            note: [
+            'Piezosurgery technology allows precise and controlled bone cutting during procedures such as tooth extraction and dental implant surgery.',
+            'Its selective action on hard tissue helps protect the surrounding soft tissues, blood vessels and nerves within the surgical area.',
+          ].join('\n'),
           },
           {
-            name: 'Microscope',
-            note: 'So the doctor has a magnified field through fine surgical work and through endodontic treatment — root canal.',
+            name: 'Dental microscope',
+            photo: '/media/kit-microscope.webp',
+            w: 720,
+            h: 900,
+            alt: 'The dental operating microscope on its arm',
+            note: 'The dental microscope provides powerful magnification and enhanced visualisation, allowing our doctors to perform highly precise surgical procedures and complex endodontic treatments with greater accuracy.',
           },
           {
-            name: 'Preparation and thermal obturation units',
-            note: 'So that endodontic treatment — root canal — reaches the best result it can.',
+            name: 'Advanced endodontic preparation and thermoplastic obturation systems',
+            photo: '/media/kit-obturation.webp',
+            w: 720,
+            h: 900,
+            alt: 'The canal preparation motor beside the warm obturation gun',
+            note: 'Our advanced root canal preparation and warm obturation systems are designed to achieve the highest possible level of precision during endodontic treatment.',
           },
           {
-            name: 'Sedation gas mask (laughing gas)',
-            note: 'So a child’s dental treatment is a calm session.',
+            name: 'Nitrous oxide sedation',
+            photo: '/media/kit-sedation.webp',
+            w: 720,
+            h: 900,
+            alt: 'The nitrous oxide sedation mask on its arm above the chair',
+            note: 'Also known as “laughing gas”, nitrous oxide sedation helps provide children with a calmer and more comfortable experience during dental treatment.',
           },
           {
-            name: 'Hair removal system',
+            name: 'Laser hair removal system',
+            photo: '/media/kit-hair.webp',
+            w: 720,
+            h: 960,
+            alt: 'The Cynosure Elite+ laser hair removal unit',
             model: 'Cynosure Elite+ 2026',
-            note: 'The best in the world for hair removal, with results guaranteed over the long term.',
+            note: [
+            'The centre is equipped with the Cynosure Elite+ 2026, one of the world’s leading technologies for laser hair removal.',
+            'Its advanced technology allows us to deliver precise, effective treatments designed to achieve reliable and long-lasting results.',
+          ].join('\n'),
           },
           {
             name: 'Radiographic imaging system',
+            photo: '/media/kit-imaging.webp',
+            w: 720,
+            h: 900,
+            alt: 'The Carestream imaging unit, cephalometric arm extended',
             model: 'Carestream',
-            note: 'Giving the doctor a wide range of radiographic options, so the diagnosis is precise before treatment begins.',
+            note: 'Our Carestream imaging system provides clinicians with a comprehensive range of advanced radiographic imaging options, supporting accurate diagnosis and precise treatment planning before treatment begins.',
           },
         ],
       },
@@ -318,7 +444,10 @@ export const strings = {
     // the people in it, and that is not a sentence to say drily.
     visitors: {
       heading: 'They came to us … and left with a smile.',
-      sub: 'Guests and patients who put their trust in our team. The same standard for everyone who sits in the chair, whoever they are.',
+      sub: [
+        'Guests and patients who put their trust in the clinic’s team.',
+        'The same standard for everyone who comes here for treatment, whoever they are.',
+      ].join('\n'),
       // Three sentences rather than twenty-three captions. An alt attribute
       // describes the photograph, and nothing in this repository knows who any
       // of these people are — inventing names for them would be a claim, not a
@@ -335,48 +464,76 @@ export const strings = {
       play: 'Play',
     },
 
-    // !! PLACEHOLDER — every name, specialism and biography below is invented.
+    // Every name and qualification below is the clinic's own. Nothing here is
+    // invented any more — the six placeholder dentists this section shipped with
+    // were replaced one at a time, and each time the invented entry whose
+    // discipline a real doctor covered was deleted rather than shuffled down.
+    //
+    // None carries a `bio`, because no biography came with any of them, and an
+    // invented sentence under a confirmed person is worse than a short card.
+    // Five have their portrait. The sixth is still a monogram — see the
+    // !! PORTRAIT marker on his entry.
+    //
+    // The fifth is a plastic surgeon rather than a dentist. The clinic was asked
+    // and confirmed he is one of the six, so `record` stays at six and the `sub`
+    // keeps its wording — settled, not overlooked.
+    // Confirmed entries lead, in the order they were supplied, and a placeholder
+    // whose discipline a confirmed dentist covers is deleted rather than moved
+    // down: the invented endodontist went when Dr. Haya Allouni arrived.
     // Six entries because `record` states six dentists; keep the two in step.
-    // Portraits are monograms, not faces, for the reason in
+    // The remaining five portraits are monograms, not faces, for the reason in
     // scripts/team-placeholders.mjs.
     team: {
       heading: 'The hands behind the work.',
       sub: 'Six dentists, each with a discipline of their own.',
       members: [
         {
+          // Confirmed by the clinic: name, qualification and portrait. Nothing
+          // here was written for the page.
           name: 'Dr. Jihad Alrashed',
-          role: 'Cosmetic dentistry & implants',
-          bio: 'Founded the practice and leads it. Nineteen years placing implants and designing smiles, and the final say on every treatment plan that leaves the clinic.',
-          photo: '/img/team/doctor-01.svg',
+          credential: 'DDS, MSc in Periodontology',
+          photo: '/img/team/doctor-01.webp',
         },
         {
-          name: 'Dr. Layan Al-Halabi',
-          role: 'Orthodontics',
-          bio: 'Fixed appliances and clear aligners, from the first records to the retainer. Treats adults as readily as teenagers.',
-          photo: '/img/team/doctor-02.svg',
+          // Confirmed, as above. She is the clinic's endodontist, and the
+          // invented one who used to hold this discipline was removed rather
+          // than left standing beside her.
+          name: 'Dr. Haya Allouni',
+          credential: 'DDS, MSc in Endodontics',
+          photo: '/img/team/doctor-02.webp',
         },
         {
-          name: 'Dr. Omar Al-Khatib',
-          role: 'Endodontics',
-          bio: 'Root canal treatment and retreatment under magnification, including the cases other clinics have already attempted.',
-          photo: '/img/team/doctor-03.svg',
+          // Confirmed. The invented orthodontist went the same way the invented
+          // endodontist did.
+          name: 'Dr. Leen Barakat',
+          credential: 'Specialist in Orthodontics and Dentofacial Orthopedics',
+          photo: '/img/team/doctor-03.webp',
         },
         {
-          name: 'Dr. Rana Al-Sibai',
-          role: 'Children’s dentistry',
-          bio: 'First visits, prevention and early guidance — and a way of making a nervous six-year-old forget where they are.',
-          photo: '/img/team/doctor-04.svg',
+          // Confirmed — and she is the dentist in the children's gallery on the
+          // treatments section; the name embroidered on the scrubs in kids-06
+          // and kids-07 is hers. Until this week the page put an invented name
+          // beside that photograph.
+          name: 'Dr. Bushra Shamma',
+          credential: 'DDS, MSc in Pediatric Dentistry and Special Needs',
+          photo: '/img/team/doctor-04.webp',
         },
         {
-          name: 'Dr. Kinan Al-Droubi',
-          role: 'Oral surgery & implants',
-          bio: 'Extractions, bone grafting and implant placement, planned against the clinic’s own three-dimensional imaging.',
-          photo: '/img/team/doctor-05.svg',
+          // Confirmed. His is the one portrait the clinic did not shoot in the
+          // studio — see scripts/card-composite.mjs and MEDIA.md.
+          name: 'Dr. Esmail Mousa',
+          credential: 'Plastic & Reconstructive Surgeon',
+          photo: '/img/team/doctor-05.webp',
         },
         {
-          name: 'Dr. Hala Marei',
-          role: 'Skin laser & injectables',
-          bio: 'Botox, filler and cosmetic laser, worked alongside the dental treatment rather than as an afterthought to it.',
+          // Confirmed, and the last invented name on the page went with him.
+          // !! PORTRAIT — the clinic has not supplied a card for him yet, so his
+          // is the one monogram left, and it stands under a real name. When the
+          // card arrives, add its row to PORTRAITS in scripts/media.sh and point
+          // this at doctor-06.webp. scripts/predeploy.mjs looks for the marker
+          // above; removing it is a statement that the portrait is in.
+          name: 'Dr. Haidara Habib',
+          credential: 'Postgraduate Studies in Plastic and Reconstructive Surgery',
           photo: '/img/team/doctor-06.svg',
         },
       ],
@@ -477,13 +634,13 @@ export const strings = {
     ],
 
     cases: {
-      heading: 'كل وصلة تحفظ أثر اليد.',
-      sub: 'اسحب الوصلة. فوقها العمل كما صار، وتحتها كما كان.',
-      before: 'كما كانت',
-      after: 'كما صارت',
+      heading: 'كل مؤشر (slider) على كل صورة ، يحفظ أثر اليد التي وصلت إلى هذه النتيجة .',
+      sub: 'اسحب المؤشر. فوقه اللمسة الأخيرة، وتحته الزيارة الأولى.',
+      before: 'الزيارة الأولى',
+      after: 'اللمسة الأخيرة',
       caseWord: 'الحالة',
-      handle: 'اسحب لتحريك الوصلة',
-      compare: 'المريض نفسه قبل العلاج وبعده في العيادة. اسحب الوصلة للمقارنة.',
+      handle: 'اسحب لتحريك المؤشر',
+      compare: 'المريض نفسه قبل العلاج وبعده في العيادة. اسحب المؤشر للمقارنة.',
       shown: 'من النتيجة النهائية ظاهرة',
       // PLACEHOLDER
       labels: [
@@ -500,34 +657,86 @@ export const strings = {
       items: [
         {
           name: 'تجميل الأسنان',
-          note: 'عدسات وتبييض وتصميم ابتسامة، بلونٍ يُختار ليناسب الوجه الذي ينتمي إليه.',
+          note: 'تصميم الابتسامة بشكل يناسب وجه المريض من حيث الشكل و اللون و أسلوبه في الكلام أو الابتسام .',
           lead: true,
         },
         {
           name: 'زراعة الأسنان',
-          note: 'أساسٌ دائم: التخطيط، الزرع، والتعويض الذي يعلوه.',
+          note: 'بدءً من التخطيط مروراً بوضع الزرعة و الإجراءات الجراحية المرافقة ( تطعيم العظم أو اللثة ) و انتهاءً بالتعويض النهائي .',
           lead: true,
         },
         {
           name: 'المعالجة اللبية',
-          note: 'معالجة الأقنية وإعادة المعالجة، بعملٍ تحت التكبير.',
+          note: 'إجراءات علاج و إعادة معالجة الأقنية الجذرية بالاعتماد على أحدث أجهزة التحضير و الحشي الحراري و تحت التكبير المجهري .',
           lead: true,
         },
         {
           name: 'تقويم الأسنان',
-          note: 'تقويم ثابت ومصففات شفافة، بمتابعة حتى آخر مليمتر.',
+          note: 'تحديد الخطة العلاجية الأنسب للمريض بناءً على العمر و حالة الأسنان ، و باستخدام الأجهزة الوظيفية أو الحاصرات ( المعدنية أو الخزفية ) أو الراصفات الشفافة Invisalign ، و بمتابعة و مراقبة حتى آخر جزء من الميليمتر .',
+          gallery: {
+            mode: 'dialog',
+            title: 'حالة كاملة، من أولها إلى آخرها',
+            // مرتّبة: قبل، بعد، قبل، بعد — الشبكة تُقرأ بالعرض، فيصير كل سطر
+            // منظراً واحداً مصوَّراً مرتين. انظر `pairs` في Gallery.jsx.
+            pairs: true,
+            items: [
+              { image: '/media/ortho-before-01.webp', w: 1100, h: 498, label: 'كما كانت — الإطباق الأمامي', alt: 'صورة داخل الفم قبل المعالجة التقويمية، الإطباق الأمامي' },
+              { image: '/media/ortho-after-01.webp',  w: 1100, h: 498, label: 'كما صارت — الإطباق الأمامي', alt: 'المنظر نفسه بعد المعالجة التقويمية، الإطباق الأمامي' },
+              { image: '/media/ortho-before-02.webp', w: 1100, h: 618, label: 'كما كانت — الجانب الأيمن', alt: 'صورة داخل الفم قبل المعالجة التقويمية، الجانب الأيمن' },
+              { image: '/media/ortho-after-02.webp',  w: 1100, h: 618, label: 'كما صارت — الجانب الأيمن', alt: 'المنظر نفسه بعد المعالجة التقويمية، الجانب الأيمن' },
+              { image: '/media/ortho-before-03.webp', w: 1100, h: 612, label: 'كما كانت — الجانب الأيسر', alt: 'صورة داخل الفم قبل المعالجة التقويمية، الجانب الأيسر' },
+              { image: '/media/ortho-after-03.webp',  w: 1100, h: 612, label: 'كما صارت — الجانب الأيسر', alt: 'المنظر نفسه بعد المعالجة التقويمية، الجانب الأيسر' },
+              { image: '/media/ortho-before-04.webp', w: 1100, h: 822, label: 'كما كانت — الفك العلوي', alt: 'صورة داخل الفم قبل المعالجة التقويمية، الفك العلوي' },
+              { image: '/media/ortho-after-04.webp',  w: 1100, h: 822, label: 'كما صارت — الفك العلوي', alt: 'المنظر نفسه بعد المعالجة التقويمية، الفك العلوي' },
+              { image: '/media/ortho-before-05.webp', w: 1100, h: 758, label: 'كما كانت — الفك السفلي', alt: 'صورة داخل الفم قبل المعالجة التقويمية، الفك السفلي' },
+              { image: '/media/ortho-after-05.webp',  w: 1100, h: 758, label: 'كما صارت — الفك السفلي', alt: 'المنظر نفسه بعد المعالجة التقويمية، الفك السفلي' },
+            ],
+            more: {
+              title: 'حالة ثانية، بلقطات قريبة',
+              items: [
+                { image: '/media/ortho-close-01.webp', w: 1100, h: 702, alt: 'لقطة قريبة داخل الفم للأسنان الجانبية في وضع الإطباق' },
+                { image: '/media/ortho-close-02.webp', w: 1100, h: 746, alt: 'لقطة قريبة داخل الفم للأسنان الجانبية في وضع الإطباق' },
+                { image: '/media/ortho-close-03.webp', w: 1100, h: 634, alt: 'لقطة قريبة داخل الفم للأسنان الجانبية في وضع الإطباق' },
+              ],
+            },
+            note: 'الصور العشر الأولى لمريض واحد، بالمناظر الخمسة المعتمدة، قبل المعالجة وبعدها. أما الصور الثلاث الأخيرة فلمريض آخر وبكاميرا أخرى، وليست «قبل وبعد» للحالة التي فوقها.',
+          },
         },
         {
           name: 'أسنان الأطفال',
-          note: 'رعاية من أول سن: وقاية، حشوات، وتوجيه مبكر.',
+          note: 'رعاية قبل بزوغ أي سن ، مروراً بالتوجيه المبكر و انتهاءً بكافة الإجراءات العلاجية الخاصة بالأطفال .',
+          // !! CONSENT — children. Seven photographs of nine identifiable
+          // children and one teenager, faces in frame, published at full size.
+          // Nothing in this repository evidences that the clinic holds the
+          // guardians' written consent to publish them. scripts/predeploy.mjs
+          // names this before every deploy; the marker above is what it looks
+          // for, and removing it is a statement that the consent exists.
+          gallery: {
+            mode: 'dialog',
+            title: 'الأطفال في المركز',
+            // ليست «شاهد النتائج» الافتراضية. هذه زيارات لا نتائج — ما في
+            // المجموعة صورة «قبل» ولا «بعد»، وتسميتها نتائج ادّعاء على علاج
+            // سبعة أطفال.
+            see: 'شاهد الصور',
+            items: [
+              { image: '/media/kids-01.webp', w: 658, h: 1200, alt: 'طفلة تجلس مع طبيبة أسنان الأطفال في المركز' },
+              { image: '/media/kids-02.webp', w: 675, h: 1200, alt: 'طبيبة أسنان الأطفال تحمل طفلاً صغيراً في غرفة المعالجة الصفراء' },
+              { image: '/media/kids-03.webp', w: 675, h: 1200, alt: 'طفلان بقميصي كرة قدم على جانبي طبيبة أسنان الأطفال، وكلاهما يرفع إبهامه' },
+              { image: '/media/kids-04.webp', w: 675, h: 1200, alt: 'طبيبة أسنان الأطفال مع مراجعَين أمام غرفة التصوير' },
+              { image: '/media/kids-05.webp', w: 675, h: 1200, alt: 'طفلة تحمل بالوناً إلى جانب طبيبة أسنان الأطفال في غرفة المعالجة' },
+              { image: '/media/kids-06.webp', w: 900, h: 1200, alt: 'طبيبة أسنان الأطفال مع ثلاث طفلات تحت شعار المركز في الاستقبال' },
+              { image: '/media/kids-07.webp', w: 900, h: 1200, alt: 'طفلة تحمل قصة، تجلس مع طبيبة أسنان الأطفال' },
+            ],
+          },
         },
         {
+          // !! UNCONFIRMED COPY — انظر التعليق على النسخة الإنجليزية.
           name: 'ليزر الأسنان',
           note: 'إعادة تشكيل اللثة، أعمال الأنسجة الرخوة، وتبييض بمساعدة الليزر.',
         },
         {
           name: 'الحقونات — بوتوكس وفيلر',
-          note: 'تُجرى داخل المركز، إلى جانب العمل السنّي.',
+          note: 'كافة إجراءات الحقن ضمن الجلد ( بوتوكس - فيلر … ) سواءً لغايات علاجية أو تجميلية ، بلمسة تحفظ الملامح الطبيعية للوجه .',
           gallery: {
             mode: 'dialog',
             title: 'فيلر الشفاه، في المركز',
@@ -542,7 +751,7 @@ export const strings = {
         },
         {
           name: 'ليزر البشرة — إزالة الشعر',
-          note: 'علاج البشرة في الزيارة نفسها، وفي المركز نفسه.',
+          note: 'إزالة شعر الجسم باتباع المعايير الأكاديمية الدقيقة و باستخدام أحدث الأجهزة المعروفة عالمياً للوصول إلى نتائج مضمونة على المدى البعيد .',
           gallery: {
             mode: 'dialog',
             title: 'ليزر البشرة في المركز',
@@ -554,8 +763,7 @@ export const strings = {
         },
         {
           name: 'التصوير الشعاعي',
-          note:
-            'قسم خاص مزوّد بجهاز Carestream العالمي، يتيح خيارات تصوير واسعة تتضمن:',
+          note: 'يحتوي المركز على قسم خاص بالتصوير الشعاعي مزود بجهاز Carestream العالمي ، و الذي يتيح خيارات تصوير واسعة تتضمن :',
           list: [
             'التصوير البانورامي للفكين',
             'التصوير ثلاثي الأبعاد الخاص بالزرع والمعالجة اللبية',
@@ -594,6 +802,8 @@ export const strings = {
         'يعتبر مركز الدكتور جهاد الراشد لتجميل الوجه و الأسنان من المراكز الأولى في سوريا التي تقدم خدمات علاجية تخصصية ضمن أعلى المعايير الأكاديمية و بأحدث الأجهزة الطبية في مجال الأسنان و البشرة ، و ضمن بيئة عمل تعتمد أعلى مستويات التعقيم .',
         'خبرة تتجاوز ١٩ عاماً أنشأت فريقاً متكاملاً من الأطباء لوضع  الخطة العلاجية الأنسب لكل مريض يقرر أن يكون تحت رعايتنا حتى نصل معه إلى أفضل نتيجة علاجية يمكن أن يحصل عليها .',
       ],
+      // !! STOCK IMAGERY — the seven photographs below are manufacturer
+      // renders, not this clinic's own units. See MEDIA.md.
       kit: {
         lead: 'و لضمان الوصول إلى النتيجة العلاجية المرجوة ، تم تجهيز المركز بأحدث الأجهزة التخصصية :',
         see: 'الأجهزة',
@@ -601,31 +811,60 @@ export const strings = {
         items: [
           {
             name: 'الدايود ليزر',
-            note: 'لضمان الإجراءات الجراحية الخاصة باللثة ( قطع أو تجريف ) بأقل رض أو نزف ممكن .',
+            photo: '/media/kit-diode.webp',
+            w: 720,
+            h: 900,
+            alt: 'جهاز الدايود ليزر وقبضته',
+            note:
+            'لضمان الإجراءات الجراحية الخاصة باللثة ( قطع أو تجريف ) بأقل رض أو نزف ممكن ، بالإضافة إلى قدرة الجهاز على تسريع شفاء الجروح و شفاء قسم واسع من اضطرابات المفصل الفكي الصدغي .',
           },
           {
             name: 'جهاز البييزو',
+            photo: '/media/kit-piezo.webp',
+            w: 720,
+            h: 900,
+            alt: 'جهاز البييزو وقبضته ورؤوس القطع',
             note: 'لضمان إجراءات القطع العظمي الآمن ( خلال القلع أو الزرع ) دون إحداث أي رض على الأوعية الدموية أو الأعصاب في منطقة العمل .',
           },
           {
             name: 'المايكروسكوب',
+            photo: '/media/kit-microscope.webp',
+            w: 720,
+            h: 900,
+            alt: 'المجهر الجراحي على ذراعه',
             note: 'لضمان ساحة تكبير تساعد الطبيب خلال الإجراءات الجراحية الدقيقة أو إجراءات المعالجة اللبية ( سحب العصب ).',
           },
           {
             name: 'أجهزة التحضير و الحشي الحراري',
+            photo: '/media/kit-obturation.webp',
+            w: 720,
+            h: 900,
+            alt: 'محرّك تحضير الأقنية إلى جانب مسدس الحشي الحراري',
             note: 'لضمان أفضل نتيجة ممكنة خلال إجراءات المعالجة اللبية ( سحب العصب ).',
           },
           {
             name: 'قناع غاز التركين ( الغاز الضاحك )',
+            photo: '/media/kit-sedation.webp',
+            w: 720,
+            h: 900,
+            alt: 'قناع غاز التركين على ذراعه فوق الكرسي',
             note: 'لضمان جلسة علاج هادئة للطفل خلال المعالجة السنية .',
           },
           {
             name: 'جهاز إزالة الشعر',
-            model: 'Cynosure elite+ 2026',
+            photo: '/media/kit-hair.webp',
+            w: 720,
+            h: 960,
+            alt: 'جهاز إزالة الشعر Cynosure Elite+',
+            model: 'Cynosure Elite+ 2026',
             note: 'الأفضل عالمياً في مجال إزالة الشعر و بنتائج مضمونة على المدى البعيد.',
           },
           {
             name: 'جهاز التصوير الشعاعي',
+            photo: '/media/kit-imaging.webp',
+            w: 720,
+            h: 900,
+            alt: 'جهاز التصوير Carestream وذراع التصوير السيفالومتري ممدودة',
             model: 'Carestream',
             note: 'لتزويد الطبيب بمجال واسع من خيارات التصوير الشعاعي لضمان التشخيص الدقيق قبل البدء بالعلاج .',
           },
@@ -647,7 +886,10 @@ export const strings = {
 
     visitors: {
       heading: 'زارونا … و خرجوا بابتسامة .',
-      sub: 'ضيوف و مرضى وضعوا ثقتهم في فريق المركز . المعيار نفسه لكلّ من يجلس على الكرسي ، أيّاً كان .',
+      sub: [
+        'ضيوف و مرضى وضعوا ثقتهم في فريق المركز .',
+        'المعيار نفسه لكل من يقصد المركز لغاية العلاج ، أيّاً كان .',
+      ].join('\n'),
       alt: {
         with: 'زائر للعيادة مع الدكتور جهاد الراشد',
         solo: 'زائر للعيادة، صورة التُقطت في المركز',
@@ -660,45 +902,51 @@ export const strings = {
       play: 'تشغيل',
     },
 
-    // !! PLACEHOLDER — انظر التعليق على النسخة الإنجليزية.
+    // كل الأسماء والشهادات هنا من المركز نفسه. صورة الطبيب السادس لم تصل بعد
+    // — انظر التعليق على النسخة الإنجليزية.
     team: {
       heading: 'الأيدي التي وراء العمل.',
       sub: 'ستة أطباء، لكلٍّ منهم اختصاصه.',
       members: [
         {
+          // مؤكَّد من المركز: الاسم والشهادة والصورة. لا شيء هنا كُتب للصفحة.
           name: 'د. جهاد الراشد',
-          role: 'تجميل الأسنان والزراعة',
-          bio: 'أسّس المركز ويقوده. تسعة عشر عاماً في الزراعة وتصميم الابتسامة، وله القول الأخير في كل خطة علاج تخرج من المركز.',
-          photo: '/img/team/doctor-01.svg',
+          credential: 'ماجستير في علم النسج حول السنية',
+          photo: '/img/team/doctor-01.webp',
         },
         {
-          name: 'د. ليان الحلبي',
-          role: 'تقويم الأسنان',
-          bio: 'تقويم ثابت ومصففات شفافة، من أول القياسات إلى المثبّت. تعالج البالغين كما تعالج اليافعين.',
-          photo: '/img/team/doctor-02.svg',
+          // مؤكَّد كذلك. هي طبيبة المعالجة اللبية في المركز، وقد حُذف الاسم
+          // المُختلق الذي كان يحمل هذا الاختصاص بدل أن يبقى إلى جانبها.
+          name: 'د. هيا علوني',
+          credential: 'ماجستير في مداواة الأسنان اللبية',
+          photo: '/img/team/doctor-02.webp',
         },
         {
-          name: 'د. عمر الخطيب',
-          role: 'المعالجة اللبية',
-          bio: 'معالجة الأقنية وإعادة المعالجة تحت التكبير، بما فيها الحالات التي سبق أن حاولتها عيادات أخرى.',
-          photo: '/img/team/doctor-03.svg',
+          // مؤكَّد. ذهب اسم أخصائي التقويم المُختلق كما ذهب اسم أخصائي اللبية.
+          name: 'د. لين بركات',
+          credential: 'اختصاصية في تقويم الأسنان و الفكين',
+          photo: '/img/team/doctor-03.webp',
         },
         {
-          name: 'د. رنا السباعي',
-          role: 'أسنان الأطفال',
-          bio: 'الزيارات الأولى والوقاية والتوجيه المبكر — وطريقة تُنسي الطفل الخائف أين هو.',
-          photo: '/img/team/doctor-04.svg',
+          // مؤكَّد — وهي الطبيبة نفسها في معرض الأطفال ضمن قسم الأقسام؛ الاسم
+          // المطرّز على المريول في kids-06 و kids-07 اسمها. انظر التعليق على
+          // النسخة الإنجليزية بخصوص الصورة.
+          name: 'د. بشرى شمة',
+          credential: 'ماجستير في طب أسنان الأطفال وذوي الاحتياجات الخاصة',
+          photo: '/img/team/doctor-04.webp',
         },
         {
-          name: 'د. كنان الدروبي',
-          role: 'جراحة الفم والزراعة',
-          bio: 'خلع وتطعيم عظم وزرع، بتخطيط يستند إلى التصوير ثلاثي الأبعاد في المركز نفسه.',
-          photo: '/img/team/doctor-05.svg',
+          // مؤكَّد. صورته هي البطاقة الوحيدة التي لم تُصوَّر في الاستوديو — انظر
+          // scripts/card-composite.mjs و MEDIA.md.
+          name: 'د. اسماعيل موسى',
+          credential: 'اختصاصي جراحة تجميلية وتصنيعية',
+          photo: '/img/team/doctor-05.webp',
         },
         {
-          name: 'د. هالة مرعي',
-          role: 'ليزر البشرة والحقونات',
-          bio: 'بوتوكس وفيلر وليزر تجميلي، تُجرى إلى جانب العمل السنّي لا على هامشه.',
+          // مؤكَّد، وبه ذهب آخر اسم مُختلق عن الصفحة. الصورة لم تصل بعد — انظر
+          // التعليق على النسخة الإنجليزية.
+          name: 'د. حيدره حبيب',
+          credential: 'دراسات عليا في الجراحة التجميلية والترميمية',
           photo: '/img/team/doctor-06.svg',
         },
       ],

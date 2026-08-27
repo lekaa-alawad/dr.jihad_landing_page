@@ -436,6 +436,66 @@
   margin-block-end: 0.7rem;
 }
 
+/* A before beside its own after. The column flow above packs cells by height,
+   which is right for a room shot next to a screen grab and wrong here — it
+   would set one patient's "before" alongside another's "after". Two fixed
+   columns instead, with the set ordered before, after, before, after, so a row
+   of the grid is one view of one mouth photographed twice.
+
+   The row gap is wider than the column gap on purpose: the two halves of a
+   comparison should sit closer to each other than to the next pair down. */
+.gal--dialog.gal--pairs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0.5rem;
+  row-gap: 1.6rem;
+}
+.gal--dialog.gal--pairs .gal__cell { margin-block-end: 0; }
+
+/* Two columns of a 1000px dialog is comfortable; two columns of a phone is
+   two thumbnails. Stacking keeps each photograph full width and the pair still
+   adjacent — before directly above its after — with the spacing carrying the
+   grouping the columns used to. */
+@media (max-width: 620px) {
+  .gal--dialog.gal--pairs { grid-template-columns: 1fr; row-gap: 0.4rem; }
+  .gal--dialog.gal--pairs .gal__cell:nth-child(even) { margin-block-end: 1.2rem; }
+}
+
+/* Which of the two a cell is, said on the cell rather than over the column.
+   A column heading is only true while there are two columns, and the phone
+   layout above collapses them. */
+.gal__cap {
+  position: absolute; z-index: 2;
+  inset-inline-start: 0.5rem; inset-block-end: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.72rem; line-height: 1.35;
+  color: var(--light);
+  background: rgba(14, 11, 10, 0.72);
+  backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+/* The heading over a second set inside the same dialog. */
+.gal__group {
+  padding: 0 clamp(1rem, 3vw, 1.6rem);
+  font-family: var(--display); font-size: 0.95rem; font-weight: 600;
+  color: var(--light);
+}
+.gal__group + .gal--dialog { padding-block-start: 0.7rem; }
+
+/* A short set of large photographs, laid out to be looked at rather than packed.
+   The 220px columns above are sized for a dozen phone stills; three shots off a
+   proper body flowed into them come out 220px wide with a column left empty,
+   which is the whole reason for the better camera thrown away. */
+.gal--dialog.gal--row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.7rem;
+}
+.gal--dialog.gal--row .gal__cell { margin-block-end: 0; }
+
 .gal__note {
   padding: 0 clamp(1rem, 3vw, 1.6rem) clamp(1rem, 3vw, 1.6rem);
   color: var(--fog); font-size: 0.85rem; line-height: 1.6; max-width: 62ch;
@@ -555,9 +615,14 @@
 
 .nr__doc { display: flex; flex-direction: column; }
 
+/* 9:16, the shape the clinic's portraits are supplied in: a card carrying the
+   practice logo and the doctor's name above the figure. The section reserved
+   3:4 while every portrait was a monogram drawn to fit it, and the first real
+   photograph had to lose its header to get in. The photograph is not the thing
+   to bend. */
 .nr__docShot {
   display: block; width: 100%; height: auto;
-  aspect-ratio: 3 / 4; object-fit: cover;
+  aspect-ratio: 9 / 16; object-fit: cover;
   border-radius: 10px;
   background: var(--raise);
   box-shadow: inset 0 0 0 1px var(--hair);
@@ -584,6 +649,18 @@
 /* Tracked-out caps are a Latin device; Arabic joins, so both are dropped. */
 [dir='rtl'] .nr__docRole {
   letter-spacing: 0; text-transform: none; font-size: 0.88rem;
+}
+
+/* A qualification, not a label. `.nr__docRole` sets its disciplines in tracked
+   caps, which is right for a category and wrong for a degree — uppercasing
+   `MSc` gives `MSC`, a different thing that means nothing. Same colour and
+   weight so the two read as the same line of the card, normal case so the
+   abbreviations survive it. */
+.nr__docCred {
+  margin-block-start: 0.3rem;
+  color: var(--peach);
+  font-size: 0.86rem; font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .nr__docBio {
@@ -748,4 +825,29 @@
   color: var(--fog);
   font-size: 0.78rem; letter-spacing: 0.12em;
   font-variant-numeric: tabular-nums;
+}
+
+
+/* The department notes carry the clinic's own two- and three-sentence copy now,
+   one paragraph per sentence. Without this they close up into a single block. */
+.nr__row p + p { margin-block-start: 0.6rem; }
+.kit__note + .kit__note { margin-block-start: 0.5rem; }
+
+/* The equipment photographs. Picture beside the words at any width that can
+   hold both; stacked below 560px, where a 280px column would leave the text in
+   a gutter four words wide. */
+.kit__item { display: grid; gap: 1rem 1.3rem; align-items: start; }
+@media (min-width: 560px) {
+  .kit__item { grid-template-columns: minmax(0, 210px) minmax(0, 1fr); }
+}
+.kit__shot {
+  display: block; width: 100%; height: auto;
+  border-radius: 10px;
+  background: var(--raise);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+/* An item with no photograph keeps the text in the same column as the rest,
+   rather than sliding under where the pictures are. */
+@media (min-width: 560px) {
+  .kit__item:not(:has(.kit__shot)) .kit__body { grid-column: 2; }
 }
