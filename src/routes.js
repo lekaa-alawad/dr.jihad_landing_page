@@ -63,17 +63,46 @@ export const pageOf = (path) => {
 };
 
 /**
+ * An anchor per department, in the order `treatments.items` lists them.
+ *
+ * These are URL fragments, so they are ASCII and they are the same in both
+ * locales — /treatments/#orthodontics and /ar/treatments/#orthodontics are the
+ * same row of the same page, which is what lets the menu be built once and the
+ * language switch keep its place.
+ *
+ * COUPLED BY POSITION to `strings.<lang>.treatments.items`. Reordering the items
+ * in i18n.js without reordering this list would point every menu entry at the
+ * wrong department — silently, because every id would still resolve to a real
+ * row. scripts/prerender.mjs checks the two lengths agree on every build, which
+ * catches an added or removed department; a straight swap it cannot see, so
+ * treat the two lists as one.
+ */
+export const SERVICES = [
+  'cosmetic',
+  'implants',
+  'endodontics',
+  'orthodontics',
+  'childrens',
+  'dental-laser',
+  'injectables',
+  'skin-laser',
+  'imaging',
+];
+
+/**
  * The nav, in order.
  *
- * `contact` is deliberately not a page. It is five rows — address, two phones,
- * WhatsApp, Instagram, hours — and a page carrying only that is exactly the
- * empty page this split exists to get rid of. It lives on the home page and the
- * menu points at it there, so the visitor still gets the affordance.
+ * No `contact` entry: the two buttons in the bar — call and WhatsApp — are the
+ * contact affordance on every page, and they act rather than navigate. A third
+ * link pointing at a section of the home page was one more thing to read for
+ * something the buttons beside it already did.
+ *
+ * `menu: 'services'` marks the one entry that opens a dropdown of the nine
+ * departments underneath it.
  */
 export const NAV = [
   { id: 'home', page: 'home' },
-  { id: 'treatments', page: 'treatments' },
+  { id: 'treatments', page: 'treatments', menu: 'services' },
   { id: 'results', page: 'results' },
   { id: 'about', page: 'about' },
-  { id: 'contact', page: 'home', hash: 'reach' },
 ];

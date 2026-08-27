@@ -101,18 +101,20 @@ export const strings = {
     // the wording, which does not depend on where the link points.
     switchTo: { code: 'ar', label: 'عربي', title: 'اقرأ بالعربية' },
 
-    // The menu. Five entries for four pages — `contact` points at the reach
-    // section on the home page, because five contact rows are a section and not
-    // a document. `call` and `whatsapp` label the two buttons that ride in the
-    // bar on every page, so a visitor reading about orthodontics is never more
-    // than one tap from the clinic.
+    // The menu: one entry per page, and no contact link — `call` and `whatsapp`
+    // label the two buttons that ride in the bar on every page, so a visitor
+    // reading about orthodontics is already one tap from the clinic and a third
+    // link pointing back at the home page would say it a second time.
+    //
+    // `treatments` is the label on the entry that opens the nine departments.
+    // The URL stays /treatments/: it is what people search for, and the word in
+    // the bar is what they read.
     nav: {
       label: 'Clinic sections',
       home: 'Home',
-      treatments: 'Treatments',
+      treatments: 'Our Services',
       results: 'Before & After',
       about: 'The Centre',
-      contact: 'Contact',
       call: 'Call',
       whatsapp: 'WhatsApp',
       skip: 'Skip to content',
@@ -631,10 +633,9 @@ export const strings = {
     nav: {
       label: 'أقسام العيادة',
       home: 'الرئيسية',
-      treatments: 'الأقسام',
+      treatments: 'خدماتنا',
       results: 'قبل وبعد',
       about: 'المركز',
-      contact: 'تواصل',
       call: 'اتصل',
       whatsapp: 'واتساب',
       skip: 'انتقل إلى المحتوى',

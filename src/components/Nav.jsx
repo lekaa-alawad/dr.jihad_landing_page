@@ -1,4 +1,4 @@
-import { NAV, pathFor } from '../routes.js';
+import { NAV, SERVICES, pathFor } from '../routes.js';
 import { dialable, waLink } from '../i18n.js';
 
 /**
@@ -32,17 +32,40 @@ export default function Nav({ t, lang, page }) {
 
       <nav className="nr__menu" aria-label={t.nav.label}>
         {NAV.map((item) => {
-          const href = pathFor(lang, item.page) + (item.hash ? `#${item.hash}` : '');
-          const current = !item.hash && item.page === page;
-          return (
+          const href = pathFor(lang, item.page);
+          const current = item.page === page;
+          const link = (
             <a
-              key={item.id}
               href={href}
               className={`nr__navLink${current ? ' is-current' : ''}`}
               aria-current={current ? 'page' : undefined}
             >
               {t.nav[item.id]}
+              {item.menu && <span className="nr__caret" aria-hidden="true" />}
             </a>
+          );
+
+          if (!item.menu) return <span key={item.id} className="nr__navItem">{link}</span>;
+
+          // The dropdown is CSS-only — :hover for a pointer, :focus-within for a
+          // keyboard. No state, no handler, and nothing to hydrate: it works in
+          // the prerendered HTML before the bundle lands, and a crawler reads
+          // nine real links to nine real anchors rather than a button it cannot
+          // press. The parent stays a link, so a tap on a touch screen (where
+          // there is no hover) still goes to the page.
+          return (
+            <span key={item.id} className="nr__navItem nr__navItem--has">
+              {link}
+              <div className="nr__drop">
+                <ul>
+                  {t.treatments.items.map((s, i) => (
+                    <li key={SERVICES[i]}>
+                      <a href={`${href}#${SERVICES[i]}`}>{s.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </span>
           );
         })}
       </nav>

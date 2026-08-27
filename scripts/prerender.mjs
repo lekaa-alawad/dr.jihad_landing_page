@@ -17,8 +17,8 @@ import { fileURLToPath } from 'node:url';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { createServer } from 'vite';
-import { locales } from '../src/i18n.js';
-import { PAGES, pathFor } from '../src/routes.js';
+import { locales, strings } from '../src/i18n.js';
+import { PAGES, SERVICES, pathFor } from '../src/routes.js';
 
 const dist = (p) => fileURLToPath(new URL(`../dist/${p}`, import.meta.url));
 
@@ -37,6 +37,20 @@ const vite = await createServer({
   logLevel: 'warn',
   optimizeDeps: { noDiscovery: true, include: [] },
 });
+
+// SERVICES is coupled by position to treatments.items — it supplies the anchor
+// each dropdown entry points at. If a department is added to i18n.js and not
+// here, the last menu entries silently link to `undefined`; if one is removed,
+// a menu entry points at a row that no longer exists. Both are invisible on the
+// page and obvious here.
+for (const lang of locales) {
+  const n = strings[lang].treatments.items.length;
+  if (n !== SERVICES.length) {
+    throw new Error(
+      `routes.js SERVICES has ${SERVICES.length} anchors but strings.${lang}.treatments.items has ${n} — the dropdown would point at the wrong departments`
+    );
+  }
+}
 
 try {
   const { default: Noir } = await vite.ssrLoadModule('/src/Noir.jsx');

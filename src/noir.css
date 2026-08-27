@@ -924,15 +924,13 @@
   display: flex;
   align-items: center;
   gap: clamp(0.3rem, 1.4vw, 1.1rem);
-  /* On a phone the five entries do not fit, and a disclosure for something this
-     shallow costs a tap to reveal what is really one line of text. It scrolls
-     instead — the row is visibly cut off, which reads as "there is more" the way
-     a hamburger has to be learned. */
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
   margin-inline-end: auto;
 }
+/* NOT `overflow-x: auto` here. The services entry hangs a dropdown below the
+   bar, and a clipped axis on its own container cuts it off at the bar's edge —
+   the same trap as the sticky bar, one level down. The strip only scrolls where
+   the entries actually stop fitting, which is the phone layout at the bottom of
+   this file, and the dropdown is hover-only so it never opens there. */
 .nr__menu::-webkit-scrollbar { display: none; }
 
 .nr__navLink {
@@ -992,6 +990,12 @@
     flex-basis: 100%;
     margin-inline-end: 0;
     padding-block-start: 0.15rem;
+    /* Here the entries genuinely do not fit, so the row scrolls. A disclosure
+       for something this shallow would cost a tap to reveal one line of text;
+       a visibly cut-off row reads as "there is more" without being learned. */
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
   }
 }
 
@@ -1001,3 +1005,73 @@
    and the bar floats on it. Its own 8rem of top padding already clears the bar
    for the headline. */
 .nr__hero { margin-block-start: calc(-1 * var(--bar-h)); }
+
+
+
+/* ── the services dropdown ────────────────────────────────────────────────────
+   CSS only. :hover for a pointer, :focus-within for a keyboard, and nothing for
+   a touch screen — where there is no hover, the parent is still a link to the
+   page, which is the right outcome rather than a degraded one.
+   ────────────────────────────────────────────────────────────────────────── */
+.nr__navItem { position: relative; display: inline-flex; }
+
+.nr__caret {
+  width: 0; height: 0;
+  margin-inline-start: 0.35rem;
+  border-inline: 3.5px solid transparent;
+  border-block-start: 4px solid currentColor;
+  opacity: 0.75;
+  transition: transform 0.25s ease;
+}
+
+.nr__drop {
+  position: absolute;
+  inset-block-start: calc(100% + 0.45rem);
+  inset-inline-start: 0;
+  z-index: 3;
+  min-width: 15rem;
+  padding: 0.4rem;
+  border-radius: 12px;
+  background: rgba(23, 18, 17, 0.97);
+  box-shadow: inset 0 0 0 1px var(--hair), 0 18px 44px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+
+  /* visibility, not display: a display swap cannot transition, and it would
+     also take the panel out of the accessibility tree between frames. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.nr__drop ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.nr__drop a {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: var(--fog);
+  font-size: 0.86rem; line-height: 1.35;
+  transition: color 0.2s, background-color 0.2s;
+}
+.nr__drop a:hover { color: var(--light); background: rgba(251, 247, 243, 0.07); }
+.nr__drop a:focus-visible { outline: 2.5px solid var(--peach); outline-offset: -2px; }
+
+/* Hover only where hovering is real. On a touch screen `:hover` sticks after a
+   tap, which would leave the panel open over the page the tap navigated to. */
+@media (hover: hover) {
+  .nr__navItem--has:hover .nr__drop { opacity: 1; visibility: visible; transform: translateY(0); }
+  .nr__navItem--has:hover .nr__caret { transform: rotate(180deg); }
+}
+/* Keyboard: opens when focus enters the item, closes when it leaves. */
+.nr__navItem--has:focus-within .nr__drop { opacity: 1; visibility: visible; transform: translateY(0); }
+.nr__navItem--has:focus-within .nr__caret { transform: rotate(180deg); }
+
+/* The bar is fixed, so an anchor jump lands the row underneath it. This is what
+   puts the heading back below the bar — on the rows, not on a wrapper, because
+   the row is what the URL names. */
+.nr__row { scroll-margin-block-start: calc(var(--bar-h) + 1.5rem); }
+
+/* Arriving from the menu should read as travel, not a cut — but only for a
+   visitor who has not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

@@ -1,5 +1,6 @@
 import { SplitWords, RevealGroup } from '../components/Kinetic.jsx';
 import Gallery from '../components/Gallery.jsx';
+import { SERVICES } from '../routes.js';
 
 /** The nine departments — the whole of the Treatments page. */
 export default function Treatments({ t }) {
@@ -8,8 +9,16 @@ export default function Treatments({ t }) {
       <div className="nr__wrap">
         <SplitWords as="h2" text={t.treatments.heading} className="nr__h2" />
         <RevealGroup className="nr__rows" gap={0.05}>
-          {t.treatments.items.map((item) => (
-            <div className={`nr__row ${item.lead ? 'is-lead' : ''}`} key={item.name}>
+          {t.treatments.items.map((item, i) => (
+            // The id is what the menu's dropdown links at. It comes from
+            // SERVICES rather than the name, so the anchor is the same ASCII
+            // string in both locales and a reader who switches script keeps
+            // their place on the page.
+            <div
+              className={`nr__row ${item.lead ? 'is-lead' : ''}`}
+              id={SERVICES[i]}
+              key={item.name}
+            >
               <h3>{item.name}</h3>
               {/* The note and the list are one cell, so on wide screens the
                   imaging modalities stay in the right-hand column with the
