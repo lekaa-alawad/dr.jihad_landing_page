@@ -4,13 +4,13 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs",
+    "dev": "node scripts/shells.mjs && vite",
+    "build": "node scripts/shells.mjs && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "predeploy": "node scripts/predeploy.mjs",
     "deploy": "npm run build && npm run predeploy && wrangler deploy"
   },
-  "//allowScripts": "npm now skips install scripts unless they are approved here. esbuild's postinstall is what puts its native binary in place, and Vite cannot build without it \u2014 Cloudflare's build image warns 'not yet covered by allowScripts' and carries on, so the failure surfaces later as a broken build rather than a failed install.",
+  "//allowScripts": "npm now skips install scripts unless they are approved here. esbuild's postinstall is what puts its native binary in place, and Vite cannot build without it — Cloudflare's build image warns 'not yet covered by allowScripts' and carries on, so the failure surfaces later as a broken build rather than a failed install.",
   "allowScripts": {
     "esbuild": true
   },

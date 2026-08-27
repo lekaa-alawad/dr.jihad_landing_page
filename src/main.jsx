@@ -3,14 +3,18 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import Noir from './Noir.jsx';
 import './base.css';
 
-// The locale is decided by which document was served, not by anything at
-// runtime — /index.html carries lang="en", /ar/index.html lang="ar".
+// Both are decided by which document was served, not by anything at runtime —
+// the shell carries lang="en"/"ar" and data-page="treatments" and so on. Reading
+// them off <html> rather than parsing location.pathname means the client can
+// never disagree with what the prerender rendered, which is what a hydration
+// mismatch is made of.
 const lang = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+const page = document.documentElement.dataset.page || 'home';
 
 const container = document.getElementById('root');
 const app = (
   <StrictMode>
-    <Noir lang={lang} />
+    <Noir lang={lang} page={page} />
   </StrictMode>
 );
 

@@ -4,11 +4,48 @@
 // This runs at build time only (from vite.config.js and scripts/prerender.mjs).
 // Nothing here is shipped to the browser.
 
-import { HERO, SITE, dialable, locales, pathFor, strings } from './i18n.js';
+import { HERO, SITE, dialable, locales, strings } from './i18n.js';
+import { PAGES, pathFor } from './routes.js';
 
 /** Trailing slashes stripped so `origin() + pathFor()` never doubles up. */
 export const origin = () => (process.env.SITE_URL || SITE).replace(/\/+$/, '');
-export const urlFor = (lang) => origin() + pathFor(lang);
+export const urlFor = (lang, page = 'home') => origin() + pathFor(lang, page);
+
+/** A description trimmed to roughly what a search result will actually show. */
+const clamp = (text, max = 158) => {
+  const one = String(text).replace(/\s+/g, ' ').trim();
+  if (one.length <= max) return one;
+  return `${one.slice(0, one.lastIndexOf(' ', max - 1))}…`;
+};
+
+/**
+ * Title and description per page, composed from copy the clinic has confirmed
+ * rather than written fresh for the tags.
+ *
+ * That constraint is deliberate. A meta description is the sentence a search
+ * result shows, so inventing one here would put unverified prose in front of
+ * more people than the page itself does. The case LABELS are excluded for the
+ * same reason and more sharply: they are the four invented captions predeploy
+ * still flags, and a meta description is the last place an unconfirmed claim
+ * about a real patient's treatment should end up.
+ *
+ * `home` keeps its existing tags untouched — it is the page with whatever
+ * ranking the site has, and this split should not cost it that.
+ */
+export function metaFor(lang, page = 'home') {
+  const t = strings[lang];
+  if (page === 'home') return { title: t.meta.title, description: t.meta.description };
+
+  const title = `${t.nav[page]} — ${t.clinic}`;
+  const description =
+    page === 'treatments'
+      ? clamp(`${t.treatments.heading} ${t.treatments.items.map((i) => i.name).join(' · ')}`)
+      : page === 'results'
+        ? clamp(`${t.cases.heading} ${t.cases.sub}`)
+        : clamp(t.about.body[0]);
+
+  return { title, description };
+}
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -101,26 +138,34 @@ export function jsonLd(lang) {
   return JSON.stringify(node).replace(/</g, '\\u003c');
 }
 
-/** The whole <head> payload for one locale, as an HTML string. */
-export function headTags(lang) {
+/**
+ * The whole <head> payload for one page of one locale, as an HTML string.
+ *
+ * hreflang pairs each page with its OWN counterpart — /treatments/ points at
+ * /ar/treatments/, never at the Arabic front door. Pointing every page at the
+ * other locale's home is the classic way to make eight documents look to a
+ * crawler like two, and it is easy to write by accident.
+ */
+export function headTags(lang, page = 'home') {
   const t = strings[lang];
-  const { title, description, ogLocale } = t.meta;
+  const { ogLocale } = t.meta;
+  const { title, description } = metaFor(lang, page);
   const alternates = locales
-    .map((l) => `<link rel="alternate" hreflang="${l}" href="${urlFor(l)}" />`)
+    .map((l) => `<link rel="alternate" hreflang="${l}" href="${urlFor(l, page)}" />`)
     .join('\n    ');
 
   return `<title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}" />
-    <link rel="canonical" href="${urlFor(lang)}" />
+    <link rel="canonical" href="${urlFor(lang, page)}" />
 
     ${alternates}
-    <link rel="alternate" hreflang="x-default" href="${urlFor('en')}" />
+    <link rel="alternate" hreflang="x-default" href="${urlFor('en', page)}" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="${esc(t.clinic)}" />
     <meta property="og:title" content="${esc(title)}" />
     <meta property="og:description" content="${esc(description)}" />
-    <meta property="og:url" content="${urlFor(lang)}" />
+    <meta property="og:url" content="${urlFor(lang, page)}" />
     <meta property="og:locale" content="${ogLocale}" />
     ${locales
       .filter((l) => l !== lang)
@@ -139,23 +184,39 @@ export function headTags(lang) {
     ${FONTS[lang]
       .map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin />`)
       .join('\n    ')}
-    <link rel="preload" href="${HERO.src}" as="image" fetchpriority="high" />
+    ${
+      // The hero photograph is the LCP element on the home page and does not
+      // exist on the other three. Preloading it everywhere would have each of
+      // them fetch 1080x1440 of a picture they never paint.
+      page === 'home'
+        ? `<link rel="preload" href="${HERO.src}" as="image" fetchpriority="high" />`
+        : ''
+    }
 
-    <script type="application/ld+json">${jsonLd(lang)}</script>`;
+    ${
+      // One Dentist node for the site, on the home page. The others describe
+      // parts of the same clinic, not four businesses, and `@id` already ties
+      // any repeat back to this one — so repeating it would add nothing a
+      // crawler does not already have.
+      page === 'home' ? `<script type="application/ld+json">${jsonLd(lang)}</script>` : ''
+    }`;
 }
 
+/** Every page in every locale — four by two, each pointing at its own twin. */
 export function sitemapXml() {
   const today = new Date().toISOString().slice(0, 10);
-  const entry = (lang) => `  <url>
-    <loc>${urlFor(lang)}</loc>
+  const entry = (lang, page) => `  <url>
+    <loc>${urlFor(lang, page)}</loc>
     <lastmod>${today}</lastmod>
-${locales.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${urlFor(l)}" />`).join('\n')}
-    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('en')}" />
+${locales.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${urlFor(l, page)}" />`).join('\n')}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('en', page)}" />
   </url>`;
+
+  const urls = PAGES.flatMap((page) => locales.map((lang) => entry(lang, page)));
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${locales.map(entry).join('\n')}
+${urls.join('\n')}
 </urlset>
 `;
 }

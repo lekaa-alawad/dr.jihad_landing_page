@@ -18,11 +18,13 @@ import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { createServer } from 'vite';
 import { locales } from '../src/i18n.js';
+import { PAGES, pathFor } from '../src/routes.js';
 
 const dist = (p) => fileURLToPath(new URL(`../dist/${p}`, import.meta.url));
 
-// Where each locale's built page lives, relative to dist/.
-const pageFor = (lang) => (lang === 'en' ? 'index.html' : `${lang}/index.html`);
+// Where each document lives, relative to dist/. Same route table the shells and
+// the Vite inputs come from, so the three cannot disagree about what exists.
+const fileFor = (lang, page) => `${pathFor(lang, page).replace(/^\//, '')}index.html`;
 
 // `noDiscovery` matters: a dev server would otherwise run esbuild's dependency
 // scanner over the whole graph before serving anything. Nothing here is served
@@ -40,24 +42,32 @@ try {
   const { default: Noir } = await vite.ssrLoadModule('/src/Noir.jsx');
 
   for (const lang of locales) {
-    const file = dist(pageFor(lang));
-    const html = await readFile(file, 'utf8');
+    for (const page of PAGES) {
+      const rel = fileFor(lang, page);
+      const file = dist(rel);
+      const html = await readFile(file, 'utf8');
 
-    const body = renderToString(createElement(Noir, { lang }));
+      const body = renderToString(createElement(Noir, { lang, page }));
 
-    if (!html.includes('<div id="root"></div>')) {
-      throw new Error(`${pageFor(lang)}: no empty #root to fill — did the shell change?`);
+      if (!html.includes('<div id="root"></div>')) {
+        throw new Error(`${rel}: no empty #root to fill — did the shell change?`);
+      }
+
+      // A page that renders to almost nothing means the tree threw somewhere and
+      // React swallowed it. Better to fail the build than to publish a shell and
+      // quietly lose the one thing this script exists for.
+      //
+      // The floor is per-page now. `results` is one section of four sliders and
+      // legitimately renders a fraction of what home does, so a single 2000-byte
+      // rule would either fail that page or be too slack to catch an empty one.
+      const floor = page === 'home' ? 6000 : 1500;
+      if (body.length < floor) {
+        throw new Error(`${rel}: rendered only ${body.length} bytes, under the ${floor} floor — prerender produced an empty page`);
+      }
+
+      await writeFile(file, html.replace('<div id="root"></div>', `<div id="root">${body}</div>`));
+      console.log(`prerendered  ${rel.padEnd(28)} ${(body.length / 1024).toFixed(1)} KB of markup`);
     }
-
-    // A page that renders to almost nothing means the tree threw somewhere and
-    // React swallowed it. Better to fail the build than to publish a shell and
-    // quietly lose the one thing this script exists for.
-    if (body.length < 2000) {
-      throw new Error(`${pageFor(lang)}: rendered only ${body.length} bytes — prerender produced an empty page`);
-    }
-
-    await writeFile(file, html.replace('<div id="root"></div>', `<div id="root">${body}</div>`));
-    console.log(`prerendered  ${pageFor(lang)}  (${(body.length / 1024).toFixed(1)} KB of markup)`);
   }
 } finally {
   await vite.close();

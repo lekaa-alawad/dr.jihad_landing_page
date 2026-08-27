@@ -95,7 +95,28 @@ export const strings = {
     },
 
     // A real link, not a JS toggle, so a crawler can walk to the other locale.
-    switchTo: { code: 'ar', href: '/ar/', label: 'عربي', title: 'اقرأ بالعربية' },
+    // `href` is no longer fixed: the site is four pages now, and a reader on
+    // /treatments/ who wants Arabic wants /ar/treatments/, not the Arabic front
+    // door. Nav.jsx computes it from the page being viewed; what stays here is
+    // the wording, which does not depend on where the link points.
+    switchTo: { code: 'ar', label: 'عربي', title: 'اقرأ بالعربية' },
+
+    // The menu. Five entries for four pages — `contact` points at the reach
+    // section on the home page, because five contact rows are a section and not
+    // a document. `call` and `whatsapp` label the two buttons that ride in the
+    // bar on every page, so a visitor reading about orthodontics is never more
+    // than one tap from the clinic.
+    nav: {
+      label: 'Clinic sections',
+      home: 'Home',
+      treatments: 'Treatments',
+      results: 'Before & After',
+      about: 'The Centre',
+      contact: 'Contact',
+      call: 'Call',
+      whatsapp: 'WhatsApp',
+      skip: 'Skip to content',
+    },
 
     hero: {
       lines: ['Every treatment.', 'One roof.', 'One standard.'],
@@ -602,7 +623,22 @@ export const strings = {
       ogLocale: 'ar_AE',
     },
 
-    switchTo: { code: 'en', href: '/', label: 'English', title: 'Read in English' },
+    switchTo: { code: 'en', label: 'English', title: 'Read in English' },
+
+    // See the note on the English side. `results` is the one label that is not
+    // simply the section's own heading shortened: قبل وبعد says what the page
+    // holds, where the heading is a sentence about the slider.
+    nav: {
+      label: 'أقسام العيادة',
+      home: 'الرئيسية',
+      treatments: 'الأقسام',
+      results: 'قبل وبعد',
+      about: 'المركز',
+      contact: 'تواصل',
+      call: 'اتصل',
+      whatsapp: 'واتساب',
+      skip: 'انتقل إلى المحتوى',
+    },
 
     hero: {
       lines: ['كافة المعالجات …', 'في مكان واحد …', 'و ضمن معيار واحد …'],

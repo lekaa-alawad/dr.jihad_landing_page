@@ -115,11 +115,9 @@
 
 /* --- language switch ------------------------------------------------------ */
 
+/* Was fixed to the top corner when it was the only chrome on the page. It sits
+   in the bar now, so it lays out in flow like the two buttons beside it. */
 .nr__lang {
-  position: fixed;
-  z-index: 6;
-  inset-block-start: clamp(0.85rem, 2.2vw, 1.5rem);
-  inset-inline-end: clamp(1.1rem, 4vw, 3.5rem);
   display: inline-flex; align-items: center;
   padding: 0.5rem 0.95rem;
   border-radius: 999px;
@@ -851,3 +849,155 @@
 @media (min-width: 560px) {
   .kit__item:not(:has(.kit__shot)) .kit__body { grid-column: 2; }
 }
+
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE BAR
+
+   FIXED, not sticky, and not by preference: `.nr` sets `overflow-x: hidden` to
+   clip its own horizontal overflow on phones, and an ancestor with a clipped
+   axis becomes the scroll container a sticky child sticks to. The bar would
+   have scrolled away with the page and the failure would have looked like a
+   z-index problem. Fixed answers to the viewport and is unaffected.
+
+   Because it is fixed it is out of flow, so `main` reserves its height and the
+   hero pulls that reservation back to sit full-bleed underneath it — the bar
+   floats over the photograph on the home page and over nothing anywhere else.
+   ────────────────────────────────────────────────────────────────────────── */
+.nr {
+  --bar-h: 108px;
+}
+@media (min-width: 861px) {
+  .nr { --bar-h: 68px; }
+}
+
+.nr__bar {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem clamp(0.7rem, 2.2vw, 1.8rem);
+  padding: 0.6rem clamp(1.1rem, 4vw, 3.5rem);
+  background: rgba(14, 11, 10, 0.76);
+  backdrop-filter: blur(14px) saturate(1.25);
+  border-block-end: 1px solid var(--hair);
+}
+
+/* Keyboard users get past five links and two buttons in one press. Off-screen
+   until focused, then it lands as a real pill rather than appearing at 1px. */
+.nr__skip {
+  position: absolute;
+  inset-inline-start: clamp(1.1rem, 4vw, 3.5rem);
+  inset-block-start: 0.6rem;
+  z-index: 2;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  transform: translateY(-160%);
+  background: var(--peach);
+  color: #1a1008;
+  font-size: 0.82rem; font-weight: 600; line-height: 1;
+  transition: transform 0.2s ease;
+}
+.nr__skip:focus-visible { transform: translateY(0); outline: 2.5px solid var(--light); outline-offset: 3px; }
+
+.nr__mark {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  color: var(--light);
+  font-family: var(--display);
+  font-weight: 700; font-size: 0.98rem;
+  letter-spacing: var(--display-track-sm);
+  white-space: nowrap;
+}
+.nr__mark img { display: block; width: 28px; height: 28px; }
+/* The clinic name is the first thing to go when the bar runs out of room — the
+   ramp mark alone still identifies the site, and the menu is what the bar is
+   for. */
+@media (max-width: 520px) {
+  .nr__mark span { display: none; }
+}
+
+.nr__menu {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.3rem, 1.4vw, 1.1rem);
+  /* On a phone the five entries do not fit, and a disclosure for something this
+     shallow costs a tap to reveal what is really one line of text. It scrolls
+     instead — the row is visibly cut off, which reads as "there is more" the way
+     a hamburger has to be learned. */
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  margin-inline-end: auto;
+}
+.nr__menu::-webkit-scrollbar { display: none; }
+
+.nr__navLink {
+  position: relative;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  color: var(--fog);
+  font-size: 0.88rem; font-weight: 500; line-height: 1;
+  white-space: nowrap;
+  transition: color 0.25s, background-color 0.25s;
+}
+.nr__navLink:hover { color: var(--light); background: rgba(251, 247, 243, 0.06); }
+.nr__navLink:focus-visible { outline: 2.5px solid var(--peach); outline-offset: 2px; }
+
+/* The current page is named twice — in colour for anyone looking, and with
+   aria-current in the markup for anyone listening. The rule sits under the
+   attribute rather than the class so the two can never disagree. */
+.nr__navLink[aria-current='page'] {
+  color: var(--peach);
+  background: rgba(243, 178, 121, 0.1);
+}
+
+.nr__barActs { display: inline-flex; align-items: center; gap: 0.45rem; }
+
+.nr__barBtn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  color: var(--light);
+  font-size: 0.82rem; font-weight: 600; line-height: 1;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  transition: background-color 0.3s, color 0.3s;
+}
+.nr__barBtn:hover { background: var(--peach); color: #1a1008; }
+.nr__barBtn:focus-visible { outline: 2.5px solid var(--peach); outline-offset: 3px; }
+.nr__barBtn--wa { background: rgba(243, 178, 121, 0.14); color: var(--peach); }
+.nr__barBtn--wa:hover { background: var(--peach); color: #1a1008; }
+
+/* Under 700px the two buttons keep their icons and drop their words, so the
+   menu keeps the width instead. WhatsApp has no icon glyph in the fallback
+   stack, so it keeps its word and only loses the padding. */
+@media (max-width: 700px) {
+  .nr__barBtn .nr__barBtnText { display: none; }
+  .nr__barBtn--wa .nr__barBtnText { display: inline; }
+  .nr__barBtn { padding-inline: 0.7rem; }
+}
+
+/* Two rows on a phone: identity and actions above, the menu strip below. The
+   --bar-h above is set to match, so `main` reserves the taller height. */
+@media (max-width: 860px) {
+  .nr__bar { padding-block: 0.5rem; }
+  .nr__mark { order: 1; }
+  .nr__barActs { order: 2; margin-inline-start: auto; }
+  .nr__menu {
+    order: 3;
+    flex-basis: 100%;
+    margin-inline-end: 0;
+    padding-block-start: 0.15rem;
+  }
+}
+
+/* The bar is out of flow, so the document reserves its height here … */
+.nr main { padding-block-start: var(--bar-h); }
+/* … and the hero alone gives it back, so the photograph runs to the top edge
+   and the bar floats on it. Its own 8rem of top padding already clears the bar
+   for the headline. */
+.nr__hero { margin-block-start: calc(-1 * var(--bar-h)); }

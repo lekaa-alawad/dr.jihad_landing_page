@@ -4,11 +4,15 @@ import { fileURLToPath } from 'node:url';
 import { existsSync, readFileSync } from 'node:fs';
 import { introBody, introHead } from './src/intro.js';
 import { headTags, robotsTxt, sitemapXml } from './src/seo.js';
+import { PAGES, pageOf, pathFor } from './src/routes.js';
+import { locales } from './src/i18n.js';
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
 
-// `/ar/index.html` in the build, `/ar/` in dev — one test covers both.
-const langOf = (path) => (path.includes('/ar/') ? 'ar' : 'en');
+// `/ar/index.html` in the build, `/ar/` in dev — one test covers both. The
+// trailing slash matters: without it `/ar` alone would not match, and with a
+// bare `/ar` test a page like `/arch/` would.
+const langOf = (path) => (/(^|\/)ar\//.test(path) ? 'ar' : 'en');
 
 /**
  * Fills the <!--seo-head--> marker in each page shell, and emits the two files
@@ -21,8 +25,9 @@ const seoPlugin = () => ({
     order: 'pre',
     handler: (html, ctx) => {
       const lang = langOf(ctx.path);
+      const page = pageOf(ctx.path);
       return html
-        .replace('<!--seo-head-->', headTags(lang))
+        .replace('<!--seo-head-->', headTags(lang, page))
         .replace('<!--intro-head-->', introHead())
         .replace('<!--intro-->', introBody(lang));
     },
@@ -69,17 +74,24 @@ const previewPlugin = () => ({
 });
 
 export default defineConfig({
-  // Two real pages, not one SPA shell: /ar/ has to be its own indexable
-  // document with its own <html lang>, not a client-side route.
+  // Eight real documents, not one SPA shell: every page in every locale has to
+  // be its own indexable file with its own <html lang>, not a client-side route.
+  // See src/routes.js.
   appType: 'mpa',
   plugins: [react(), seoPlugin(), previewPlugin()],
   server: { port: 5190 },
   build: {
     rollupOptions: {
-      input: {
-        en: here('./index.html'),
-        ar: here('./ar/index.html'),
-      },
+      // One input per document, named `<lang>-<page>`, generated from the same
+      // route table the shells are. Adding a page to PAGES adds it here.
+      input: Object.fromEntries(
+        locales.flatMap((lang) =>
+          PAGES.map((page) => [
+            `${lang}-${page}`,
+            here(`.${pathFor(lang, page)}index.html`),
+          ])
+        )
+      ),
     },
   },
 });
