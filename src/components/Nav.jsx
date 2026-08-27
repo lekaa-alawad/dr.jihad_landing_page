@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { NAV, SERVICES, pathFor } from '../routes.js';
 import { dialable, waLink } from '../i18n.js';
 
@@ -15,6 +16,33 @@ import { dialable, waLink } from '../i18n.js';
  * current page.
  */
 export default function Nav({ t, lang, page }) {
+  const barRef = useRef(null);
+
+  // The bar is fixed, so the document reserves its height as --bar-h. That
+  // height is not a constant: the bar goes to two rows under 861px and its menu
+  // can wrap again on a narrow screen, and a hard-coded value is wrong for
+  // every width it was not measured at — either a gap under the bar or the
+  // first heading hidden behind it. Measuring is the only version that stays
+  // true, and it is also what keeps `scroll-margin-block-start` on the rows
+  // landing an anchored department in the right place.
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return undefined;
+    const root = el.closest('.nr');
+    if (!root) return undefined;
+
+    const set = () => root.style.setProperty('--bar-h', `${Math.round(el.getBoundingClientRect().height)}px`);
+    set();
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', set);
+      return () => window.removeEventListener('resize', set);
+    }
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // Both from the reach rows, so the bar cannot drift from the section that
   // publishes the same numbers a scroll further down.
   const phone = t.reach.items.find((i) => i.key === 'phone')?.values[0];
@@ -22,7 +50,7 @@ export default function Nav({ t, lang, page }) {
   const other = lang === 'en' ? 'ar' : 'en';
 
   return (
-    <header className="nr__bar">
+    <header className="nr__bar" ref={barRef}>
       <a className="nr__skip" href="#main">{t.nav.skip}</a>
 
       <a className="nr__mark" href={pathFor(lang, 'home')}>

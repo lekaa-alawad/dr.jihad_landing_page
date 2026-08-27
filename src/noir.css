@@ -865,6 +865,10 @@
    hero pulls that reservation back to sit full-bleed underneath it — the bar
    floats over the photograph on the home page and over nothing anywhere else.
    ────────────────────────────────────────────────────────────────────────── */
+/* Fallback only. The bar wraps — two rows under 861px, and its menu can wrap
+   again on a very narrow screen — so its height is not a constant to be written
+   down here. Nav.jsx measures the real thing and overwrites this custom property
+   on .nr; these values are what applies before that runs, and if JS never does. */
 .nr {
   --bar-h: 108px;
 }
@@ -882,9 +886,24 @@
   flex-wrap: wrap;
   gap: 0.5rem clamp(0.7rem, 2.2vw, 1.8rem);
   padding: 0.6rem clamp(1.1rem, 4vw, 3.5rem);
+  border-block-end: 1px solid var(--hair);
+}
+
+/* The frosting lives on a pseudo-element, NOT on .nr__bar itself.
+   `backdrop-filter` makes the element carrying it a backdrop root, and a child
+   that overflows that root composites against the backdrop — so the services
+   panel rendered see-through over the hero with a fully opaque background and
+   opacity:1, which is not a combination that looks like a compositing problem
+   while you are reading the CSS. Moving the filter to ::before keeps the frost
+   and leaves the bar's children compositing normally. */
+.nr__bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background: rgba(14, 11, 10, 0.76);
   backdrop-filter: blur(14px) saturate(1.25);
-  border-block-end: 1px solid var(--hair);
 }
 
 /* Keyboard users get past five links and two buttons in one press. Off-screen
@@ -935,6 +954,10 @@
 
 .nr__navLink {
   position: relative;
+  /* inline-flex so the caret centres against the label. As a baseline-aligned
+     inline box it floated above the text, which read as a stray mark. */
+  display: inline-flex;
+  align-items: center;
   padding: 0.45rem 0.7rem;
   border-radius: 8px;
   color: var(--fog);
@@ -990,13 +1013,15 @@
     flex-basis: 100%;
     margin-inline-end: 0;
     padding-block-start: 0.15rem;
-    /* Here the entries genuinely do not fit, so the row scrolls. A disclosure
-       for something this shallow would cost a tap to reveal one line of text;
-       a visibly cut-off row reads as "there is more" without being learned. */
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-width: none;
+    /* WRAPS, it does not scroll. A scrolling strip has to clip its own inline
+       axis, and a clipped axis cuts the services panel off at the strip's edge
+       — the third time this shape of bug has bitten in this file. Four short
+       entries wrap to two lines at worst, and the bar measures its own height
+       (see Nav.jsx) so wrapping costs nothing below it. */
+    flex-wrap: wrap;
+    gap: 0.15rem 0.2rem;
   }
+
 }
 
 /* The bar is out of flow, so the document reserves its height here … */
@@ -1032,9 +1057,15 @@
   min-width: 15rem;
   padding: 0.4rem;
   border-radius: 12px;
-  background: rgba(23, 18, 17, 0.97);
-  box-shadow: inset 0 0 0 1px var(--hair), 0 18px 44px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
+  /* OPAQUE, and no backdrop-filter of its own.
+     Both matter. The panel hangs below the bar and over the hero photograph, so
+     anything less than solid leaves the headline legible straight through the
+     department names — which is what "the menu isn't showing" turned out to
+     mean. And a backdrop-filter here sits inside the bar's own backdrop-filter:
+     nested backdrop roots composite unreliably, and blurring behind an opaque
+     fill buys nothing to begin with. */
+  background: #14100f;
+  box-shadow: inset 0 0 0 1px var(--hair), 0 18px 44px rgba(0, 0, 0, 0.66);
 
   /* visibility, not display: a display swap cannot transition, and it would
      also take the panel out of the accessibility tree between frames. */
@@ -1074,4 +1105,23 @@
    visitor who has not asked for less motion. */
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
+}
+
+
+
+/* Narrow widths, and deliberately at the END of the file.
+   These carry the same specificity as the base .nr__navItem / .nr__drop rules
+   above, so order is the only thing deciding them — written next to the rest of
+   the bar (further up) the base rules came later and silently won.
+
+   The panel anchors to the bar rather than to the entry: at this width an entry
+   can sit most of the way across the row, and a 15rem panel hung off its
+   leading edge would run past the screen edge. */
+@media (max-width: 860px) {
+  .nr__navItem--has { position: static; }
+  .nr__drop {
+    inset-block-start: calc(100% + 0.3rem);
+    inset-inline: clamp(1.1rem, 4vw, 3.5rem);
+    min-width: 0;
+  }
 }
