@@ -180,4 +180,184 @@ for name in "${VISITORS[@]}"; do
   i=$((i + 1))
 done
 
+# --- orthodontics -----------------------------------------------------------
+# Two orthodontic sets, both supplied as PDFs. A PDF is only a wrapper here —
+# one photograph per page, no text — so scripts/pdf-images.swift lifts the
+# embedded image objects out at native resolution rather than rendering the
+# pages, which would resample an already-resampled picture.
+#
+# `Sans titre 6.pdf` is one patient's full five-view series photographed twice,
+# before treatment on pages 1-5 and after on pages 6-10, in the same order both
+# times: frontal bite, right lateral, left lateral, upper occlusal, lower
+# occlusal. They are iPhone *screenshots*, so each 1179x2556 page is mostly
+# black letterbox with the photograph as a band across the middle — the crops
+# below are that band, found by scanning for the first and last non-black row.
+#
+# Each before/after pair is cropped to the SHORTER of the two bands, centred in
+# its own. The page lays a pair side by side, and two cells of different heights
+# read as a mistake rather than as a comparison; taking a few rows of gum off
+# the taller one costs nothing, since the teeth sit mid-frame in all ten.
+#
+# `Untitled.pdf` is a different patient and a different camera — three
+# close-range lateral views off a proper body, no letterbox, no crop needed.
+echo "orthodontics..."
+PDFS="$SRC"
+TMPPDF="$OUT/.tmp-pdf"
+rm -rf "$TMPPDF"; mkdir -p "$TMPPDF"
+swift "$(dirname "$0")/pdf-images.swift" "$PDFS/Sans titre 6.pdf" "$TMPPDF" series >/dev/null
+swift "$(dirname "$0")/pdf-images.swift" "$PDFS/Untitled.pdf"     "$TMPPDF" close  >/dev/null
+
+# page  crop (w:h:x:y against the 1179x2556 screenshot)
+ORTHO=(
+  "01 1179:534:0:1011"   # before, frontal bite
+  "02 1179:663:0:947"    # before, right lateral
+  "03 1179:657:0:950"    # before, left lateral
+  "04 1179:881:0:837"    # before, upper occlusal
+  "05 1179:813:0:872"    # before, lower occlusal
+  "06 1179:534:0:1011"   # after,  frontal bite
+  "07 1179:663:0:946"    # after,  right lateral
+  "08 1179:657:0:949"    # after,  left lateral
+  "09 1179:881:0:837"    # after,  upper occlusal
+  "10 1179:813:0:872"    # after,  lower occlusal
+)
+i=1
+for row in "${ORTHO[@]}"; do
+  page=${row%% *}; crop=${row##* }
+  if [ "$i" -le 5 ]; then out="ortho-before-0$i"; else out="ortho-after-0$((i - 5))"; fi
+  # Crop first, then scale: cropping the 1179-wide original keeps every pixel of
+  # the band, where scaling first would soften it before the bars came off.
+  ffmpeg -v error -y -i "$TMPPDF/series-p$page.png" -map_metadata -1 \
+    -vf "crop=$crop,scale=1100:-2:flags=lanczos" "$OUT/.tmp-ortho.png"
+  cwebp -quiet -q 84 -metadata none "$OUT/.tmp-ortho.png" -o "$OUT/$out.webp"
+  rm -f "$OUT/.tmp-ortho.png"
+  i=$((i + 1))
+done
+
+for n in 1 2 3; do
+  ffmpeg -v error -y -i "$TMPPDF/close-p0$n.png" -map_metadata -1 \
+    -vf "scale=1100:-2:flags=lanczos" "$OUT/.tmp-ortho.png"
+  cwebp -quiet -q 84 -metadata none "$OUT/.tmp-ortho.png" -o "$OUT/ortho-close-0$n.webp"
+  rm -f "$OUT/.tmp-ortho.png"
+done
+rm -rf "$TMPPDF"
+
+
+# --- children's dentistry ---------------------------------------------------
+# The paediatric dentist with her patients, around the clinic: the yellow
+# treatment room, the imaging corridor, the logo wall in reception.
+#
+# Every one is a whole frame. Nothing is cropped and no face is obscured, which
+# is the point of the set — a child who is not frightened is the thing being
+# photographed — and also why MEDIA.md carries the longest consent note on the
+# site about these seven. See the note there before touching them.
+#
+# HEIC and JPEG mixed, and every file carries an EXIF orientation. `sips` is
+# what applies it: ffmpeg reads the tag but leaves the pixels on their side, so
+# a straight ffmpeg pass turns four of these ninety degrees. Going through sips
+# first also decodes the HEIC, which no ffmpeg build here can open. It writes
+# the PNG upright and the rest of the chain never has to know.
+#
+# Fitted inside a 1200px box rather than scaled to a fixed width: the set is six
+# portraits and one landscape, and a fixed width makes a portrait 1955px tall
+# for no gain in a gallery whose widest cell is a fraction of that.
+echo "children..."
+KIDS=(IMG_0130.HEIC IMG_0545.JPG.jpeg IMG_1411.JPG.jpeg IMG_1783.HEIC \
+      IMG_2832.HEIC IMG_3436.HEIC IMG_9063.HEIC)
+i=1
+for name in "${KIDS[@]}"; do
+  sips -s format png "$SRC/$name" --out "$OUT/.tmp-kid-src.png" >/dev/null
+  ffmpeg -v error -y -i "$OUT/.tmp-kid-src.png" -map_metadata -1 \
+    -vf "scale='min(1200,iw)':'min(1200,ih)':force_original_aspect_ratio=decrease:flags=lanczos" \
+    "$OUT/.tmp-kid.png"
+  cwebp -quiet -q 82 -metadata none "$OUT/.tmp-kid.png" -o "$OUT/kids-0$i.webp"
+  rm -f "$OUT/.tmp-kid-src.png" "$OUT/.tmp-kid.png"
+  i=$((i + 1))
+done
+
+
+# --- the team portraits -----------------------------------------------------
+# The one output of this script that does not land in public/media. The team
+# cards read from /img/team/, where scripts/team-placeholders.mjs writes the
+# monograms, and a real portrait replaces one at the same path as .webp — that
+# is the swap the placeholder script documents.
+#
+# Each is a 1080x1920 social card: the practice logo, the doctor's name and a
+# strapline across the top quarter, the portrait below. They are kept whole. An
+# earlier pass cropped the header off to fit the 3:4 the cards used to reserve,
+# which threw away the clinic's own framing to satisfy a ratio we had picked
+# ourselves while every portrait was still a monogram. The section reserves 9:16
+# now and the placeholders are drawn to match, so nothing is cut.
+#
+# The beige studio ground stays. Cutting a figure out and setting it on the
+# page's dark would be inventing a photograph nobody took, and this is the
+# clinic's own backdrop — every portrait so far has been shot on it.
+#
+# The order of this table is the order of `team.members` in src/i18n.js, and the
+# two must be edited together: a card's `photo` is doctor-0N.webp for its own
+# position N, and a position with no entry here still shows a monogram.
+#
+# `esmail-card.jpg` is the one entry here that is not a clinic original. The
+# clinic had no studio card for Dr. Esmail Mousa, only a photograph taken in a
+# dim room strung with warm lights, so the card was built from it by
+# scripts/card-composite.mjs and written back beside the originals. Rebuild it
+# with `node scripts/card-composite.mjs "$SRC/esmail-card.jpg"`; that step needs
+# macOS Vision and one font download, which is exactly why it is not run from
+# here. If the clinic ever supplies a real card for him, drop it in its place
+# and nothing else changes.
+echo "team portraits..."
+TEAM_OUT="/Users/lekaa/work files/dr.jihad live/public/img/team"
+mkdir -p "$TEAM_OUT"
+PORTRAITS=(
+  "01 5 (2).jpg"     # Dr. Jihad Alrashed
+  "02 1.psd.jpg"     # Dr. Haya Allouni
+  "03 3.psd.jpg"     # Dr. Leen Barakat
+  "04 2.psd.jpg"     # Dr. Bushra Shamma
+  "05 esmail-card.jpg"  # Dr. Esmail Mousa - see the note below
+)
+for row in "${PORTRAITS[@]}"; do
+  n=${row%% *}; file=${row#* }
+  ffmpeg -v error -y -i "$SRC/$file" -map_metadata -1 \
+    -vf "scale=900:1600:flags=lanczos" "$OUT/.tmp-doc.png"
+  cwebp -quiet -q 86 -metadata none "$OUT/.tmp-doc.png" -o "$TEAM_OUT/doctor-$n.webp"
+  rm -f "$OUT/.tmp-doc.png"
+done
+
+
+# --- the equipment photographs ----------------------------------------------
+# One picture per device in the kit dialog. The clinic supplied two of each:
+# a manufacturer cut-out on white, and the same unit lit in a dark room. The
+# dark one is used every time, and not as a matter of taste — the dialog is
+# #14100e, and a white-ground product shot punches a lit rectangle through it.
+# The dark set also shares one warm key light, so seven of them in a column read
+# as one set rather than seven stock images.
+#
+# Two pairs were not a with/without pair at all:
+#   hair    — IMG_7155 is a SCREENSHOT of texaslaseracademy.com, that site's
+#             chrome and URL still in frame. Not ours to publish; IMG_7160 is
+#             the clean render and is what ships.
+#   imaging — both are dark studio. IMG_3289 keeps the cephalometric arm in
+#             frame, which is one of the six modalities the page lists, so it
+#             is the honest one of the two.
+#
+# 720px wide: the column they sit in is 280px at the dialog's widest, so this
+# covers a 2x screen with a little room and nothing more.
+echo "equipment..."
+KIT=(
+  "diode      IMG_7162"   # الدايود ليزر
+  "piezo      IMG_7161"   # جهاز البييزو
+  "microscope IMG_7164"   # المايكروسكوب
+  "obturation IMG_7163"   # أجهزة التحضير و الحشي الحراري
+  "sedation   IMG_7165"   # قناع غاز التركين
+  "hair       IMG_7160"   # جهاز إزالة الشعر
+  "imaging    IMG_3289"   # جهاز التصوير الشعاعي
+)
+for row in "${KIT[@]}"; do
+  name=${row%% *}; file=${row##* }
+  ffmpeg -v error -y -i "$SRC/$file.PNG" -map_metadata -1 \
+    -vf "scale=720:-2:flags=lanczos" "$OUT/.tmp-kit.png"
+  cwebp -quiet -q 82 -metadata none "$OUT/.tmp-kit.png" -o "$OUT/kit-$name.webp"
+  rm -f "$OUT/.tmp-kit.png"
+done
+
+
 echo "done"

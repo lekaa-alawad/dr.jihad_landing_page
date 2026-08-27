@@ -7,3 +7,8 @@ dist
 fonts-inbox/
 preview/fonts/
 .venv-fonts/
+
+# Caches for scripts/card-composite.mjs: downloaded faces and cut mattes.
+# Both are rebuilt on demand and neither is the clinic's to store here.
+scripts/.fonts/
+scripts/.cardtmp/
