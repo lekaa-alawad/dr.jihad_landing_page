@@ -45,7 +45,7 @@ export const PAGES = ['home', 'treatments', 'about'];
 export const SECTIONS = {
   home: ['hero', 'record', 'cases', 'visitors', 'reach'],
   treatments: ['treatments', 'reach'],
-  about: ['about', 'team', 'reach'],
+  about: ['team', 'about', 'reach'],
 };
 
 /**

@@ -4,6 +4,11 @@ import Kit from '../components/Kit.jsx';
 /**
  * Who the centre is, in its own words, with the seven devices under them.
  *
+ * It sits under the doctors rather than above them: the team answers who runs
+ * the place, which is the question somebody opening this page is actually
+ * asking, and the prose then says what the place is. The hairline above this
+ * section is what used to sit above the team, and moved with the order.
+ *
  * It used to sit between the departments it runs and the numbers behind them,
  * and the second paragraph's nineteen years were the same nineteen the record
  * counted up to a moment later. The record stayed on the home page and this
@@ -18,7 +23,7 @@ import Kit from '../components/Kit.jsx';
  */
 export default function About({ t }) {
   return (
-    <section className="nr__section" id="about">
+    <section className="nr__section nr__section--rule" id="about">
       <div className="nr__wrap">
         <div className="nr__about">
           <SplitWords as="h2" text={t.about.heading} className="nr__h2 nr__h2--sm" />

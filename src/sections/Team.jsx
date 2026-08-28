@@ -1,10 +1,18 @@
 import { SplitWords, Reveal, RevealGroup } from '../components/Kinetic.jsx';
 import Sub from './Sub.jsx';
 
-/** The six doctors. Shares the About page with the centre's own words. */
+/**
+ * The six doctors — the top of the About page, ahead of the centre's own
+ * words.
+ *
+ * They lead because a visitor asking who runs this place is asking about
+ * people, and the faces answer that before a paragraph can. No rule above it:
+ * it is the first section on the page, and there is nothing up there to be
+ * separated from.
+ */
 export default function Team({ t }) {
   return (
-    <section className="nr__section nr__section--rule" id="team">
+    <section className="nr__section" id="team">
       <div className="nr__wrap">
         <SplitWords as="h2" text={t.team.heading} className="nr__h2 nr__h2--sm" />
         <Reveal><Sub text={t.team.sub} /></Reveal>
