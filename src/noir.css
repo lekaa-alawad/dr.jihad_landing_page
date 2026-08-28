@@ -292,6 +292,10 @@
   color: var(--fog); font-size: 0.92rem; line-height: 1.5;
 }
 .nr__subList li { position: relative; padding-inline-start: 1rem; }
+/* A modality's name, where the entry carries one. Its own line and the page's
+   light, so the name reads as the heading of the sentence under it rather than
+   as the first four words of it. */
+.nr__subName { display: block; color: var(--light); font-weight: 600; }
 .nr__subList li::before {
   content: ''; position: absolute; inset-inline-start: 0; inset-block-start: 0.62em;
   width: 5px; height: 1px; background: var(--peach);

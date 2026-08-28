@@ -30,9 +30,22 @@ export default function Treatments({ t }) {
                     standfirsts, because at this length a run-on block is
                     what stops the section being readable. */}
                 {String(item.note).split('\n').map((line, i) => <p key={i}>{line}</p>)}
+                {/* A modality is either a bare string or a `{ name, note }`
+                    pair. The English imaging list names each one and says what
+                    it is for; the Arabic is still the older flat list, and
+                    will render as it always did until it is rewritten. */}
                 {item.list && (
                   <ul className="nr__subList">
-                    {item.list.map((sub) => <li key={sub}>{sub}</li>)}
+                    {item.list.map((sub) =>
+                      typeof sub === 'string' ? (
+                        <li key={sub}>{sub}</li>
+                      ) : (
+                        <li key={sub.name}>
+                          <span className="nr__subName">{sub.name}</span>
+                          {sub.note}
+                        </li>
+                      )
+                    )}
                   </ul>
                 )}
                 {item.gallery && <Gallery gallery={item.gallery} t={t.gallery} />}

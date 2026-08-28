@@ -122,15 +122,19 @@ export const strings = {
 
     hero: {
       lines: ['Every treatment.', 'One roof.', 'One standard.'],
-      // The English side of the Arabic copy, kept line for line so the two
-      // locales say the same thing in the same shape. The list is the clinic's
-      // own, and it does not name dental laser — the department exists further
-      // down the page, but it is not in the sentence the clinic wrote.
+      // Supplied by the clinic in English. It no longer tracks the Arabic line
+      // for line — the Arabic below is still the older, shorter wording — so
+      // the two locales say the same thing in different shapes until the
+      // Arabic is rewritten to match.
+      //
+      // The list names eight departments and the site runs nine: dental laser
+      // is absent here exactly as it was in the previous version, because the
+      // clinic's own write-up has never included it.
       lede: [
-        'If you are looking for a complete medical centre for dental treatment and cosmetic work, you are in the right place.',
-        'A team of specialist doctors, for the following:',
-        "Cosmetic dentistry, dental implants, endodontics, orthodontics, children's dentistry, skin injectables (Botox and filler), skin laser (hair removal), and radiographic imaging.",
-        'All in the same place, from the first visit to the last polish.',
+        'If you are looking for an integrated medical center specializing in advanced dental and aesthetic treatments, you are in the right place.',
+        'Our multidisciplinary team of specialized doctors provides a comprehensive range of services, including:',
+        'Cosmetic Dentistry • Dental Implants • Endodontics • Orthodontics • Pediatric Dentistry • Facial Injectables (Botox & Fillers) • Laser Hair Removal • Dental & Maxillofacial Imaging',
+        'All in one location — from your very first consultation to the final touch of your treatment.',
       ].join('\n'),
       alt: 'Close-up of a finished smile, photographed at the clinic',
       primary: 'Contact the clinic',
@@ -168,15 +172,15 @@ export const strings = {
       // An item may carry a `list`: sub-capabilities rendered beneath the note.
       items: [
         {
-          name: 'Cosmetic dentistry',
+          name: 'Cosmetic Dentistry',
           note: [
             'We design smiles that complement each patient’s unique facial features.',
-            'Every smile is carefully planned according to tooth shape, colour, facial proportions, and even the patient’s natural way of speaking and smiling — creating a result that feels balanced, harmonious, and personal.',
+            'Every smile is carefully planned according to tooth shape, color, facial proportions, and even the patient’s natural way of speaking and smiling — creating a result that feels balanced, harmonious, and personal.',
           ].join('\n'),
           lead: true,
         },
         {
-          name: 'Dental implants',
+          name: 'Dental Implants',
           note: [
             'Comprehensive implant treatment from beginning to end.',
             'Our care includes detailed treatment planning, implant placement, associated surgical procedures such as bone or gum grafting when required, and the final prosthetic restoration.',
@@ -196,8 +200,9 @@ export const strings = {
           name: 'Orthodontics',
           note: [
             'Every orthodontic treatment plan is tailored to the patient’s age, dental condition, facial development, and individual needs.',
-            'Treatment options may include functional appliances, metal braces, ceramic braces and Invisalign® clear aligners.',
-            'Every stage of treatment is carefully monitored and adjusted — down to the final fraction of a millimetre.',
+            'Treatment options may include:',
+            'Functional Appliances • Metal Braces • Ceramic Braces • Invisalign® Clear Aligners',
+            'Every stage of treatment is carefully monitored and adjusted — down to the final fraction of a millimeter.',
           ].join('\n'),
           gallery: {
             mode: 'dialog',
@@ -229,7 +234,7 @@ export const strings = {
           },
         },
         {
-          name: "Children's dentistry",
+          name: 'Pediatric Dentistry',
           note: [
             'Our paediatric dental care begins even before the eruption of the first tooth.',
             'From preventive care and early guidance to comprehensive dental treatment, we provide children with continuous care throughout every stage of their dental development.',
@@ -270,7 +275,7 @@ export const strings = {
           note: 'Gum reshaping, soft-tissue work and laser-assisted whitening.',
         },
         {
-          name: 'Injectables — botox & filler',
+          name: 'Facial Injectables',
           note: [
             'We provide a full range of facial injectable treatments, including Botox® and dermal fillers, for both therapeutic and aesthetic purposes.',
             'Every procedure is performed with a refined approach focused on enhancing the patient’s features while preserving the natural character, proportions, and expressions of the face.',
@@ -288,10 +293,10 @@ export const strings = {
           },
         },
         {
-          name: 'Skin laser & hair removal',
+          name: 'Laser Hair Removal',
           note: [
-            'Our laser hair removal treatments follow precise clinical protocols and are performed using internationally recognised advanced technology.',
-            'Every treatment plan is customised according to the patient’s skin and hair characteristics, with the goal of achieving safe, effective, and long-lasting results.',
+            'Our laser hair removal treatments follow precise clinical protocols and are performed using internationally recognized advanced technology.',
+            'Every treatment plan is customized according to the patient’s skin and hair characteristics, with the goal of achieving safe, effective, and long-lasting results.',
           ].join('\n'),
           gallery: {
             mode: 'dialog',
@@ -303,18 +308,21 @@ export const strings = {
           },
         },
         {
-          name: 'Radiographic imaging',
+          name: 'Radiology',
           note: [
             'The centre includes a dedicated diagnostic imaging department equipped with advanced Carestream technology.',
             'The system provides a wide range of imaging options to support accurate diagnosis and comprehensive treatment planning, including:',
           ].join('\n'),
+          // Each modality is a name and what it is for. A `list` entry may be
+          // either that pair or a bare string — the Arabic side is still the
+          // older flat list, and Treatments.jsx renders both.
           list: [
-            'Panoramic imaging of both jaws',
-            'Three-dimensional imaging for implants and endodontics',
-            'Cephalometric imaging for orthodontic treatment',
-            'Hand-wrist imaging, to estimate a patient’s skeletal age',
-            'Temporomandibular joint imaging',
-            'Skull base imaging',
+            { name: 'Panoramic Imaging', note: 'Complete panoramic imaging of the upper and lower jaws.' },
+            { name: '3D Imaging / CBCT', note: 'Three-dimensional imaging for dental implant planning and complex endodontic procedures.' },
+            { name: 'Cephalometric Imaging', note: 'Specialized imaging used for orthodontic diagnosis and treatment planning.' },
+            { name: 'Hand & Wrist Radiography', note: 'Used to assess skeletal maturity and estimate the patient’s bone age.' },
+            { name: 'TMJ Imaging', note: 'Imaging of the temporomandibular joints for diagnostic assessment.' },
+            { name: 'Skull Base Imaging', note: 'Specialized imaging of the cranial base when clinically indicated.' },
           ],
           gallery: {
             mode: 'dialog',
@@ -353,50 +361,52 @@ export const strings = {
     about: {
       heading: 'About the centre.',
       body: [
-        'The centre of Dr. Jihad Alrashed for facial and dental aesthetics is among the first in Syria to offer specialist treatment to the highest academic standards, with the newest medical equipment in dentistry and skin care, and within a working environment held to the highest levels of sterilisation.',
-        'Experience of more than nineteen years has built an integrated team of doctors, to set the treatment plan best suited to every patient who decides to be in our care — until we reach with them the best treatment result they can be given.',
+        'Dr. Jihad Al-Rashed Center for Facial & Dental Aesthetics is one of the pioneering centers in Syria providing specialized dental and aesthetic treatments according to the highest academic and clinical standards.',
+        'The center combines advanced medical technology with a carefully controlled clinical environment that follows the highest standards of sterilization and infection control.',
+        'With more than 19 years of experience, we have built an integrated multidisciplinary team of specialized doctors who work together to develop the most appropriate treatment plan for every patient who chooses to place their care in our hands.',
+        'Our goal is to accompany each patient throughout the entire treatment journey and achieve the best possible clinical and aesthetic outcome.',
       ],
       // !! STOCK IMAGERY — the seven photographs below are manufacturer
       // renders, not this clinic's own units. See MEDIA.md.
       kit: {
-        lead: 'And to make certain that result is reached, the centre has been equipped with the newest specialist devices:',
+        lead: 'To support this commitment, the center is equipped with some of the latest specialized technologies available in modern dentistry and aesthetic medicine.',
         title: 'The newest specialist devices',
         // `model` is the make as the clinic writes it, in Latin script. It is
         // kept apart from the name so the markup can mark it as its own LTR
         // run — see the note in Kit.jsx.
         items: [
           {
-            name: 'Diode laser',
+            name: 'Diode Laser',
             photo: '/media/kit-diode.webp',
             w: 720,
             h: 900,
             alt: 'The clinic’s diode laser unit and its handpiece',
             note: [
-            'Our diode laser enables precise soft-tissue procedures, including gingival cutting and curettage, while minimising tissue trauma and bleeding.',
-            'It can also support faster wound healing, and is used in the management of a wide range of temporomandibular joint (TMJ) disorders.',
+            'Our diode laser enables precise soft-tissue procedures, including gingival cutting and curettage, while minimizing tissue trauma and bleeding.',
+            'It can also support faster wound healing and is used in the management of a wide range of temporomandibular joint (TMJ) disorders.',
           ].join('\n'),
           },
           {
-            name: 'Piezosurgery unit',
+            name: 'Piezosurgery Device',
             photo: '/media/kit-piezo.webp',
             w: 720,
             h: 900,
             alt: 'The piezosurgery unit, its handpiece and cutting tips',
             note: [
             'Piezosurgery technology allows precise and controlled bone cutting during procedures such as tooth extraction and dental implant surgery.',
-            'Its selective action on hard tissue helps protect the surrounding soft tissues, blood vessels and nerves within the surgical area.',
+            'Its selective action on hard tissue helps protect surrounding soft tissues, blood vessels, and nerves within the surgical area.',
           ].join('\n'),
           },
           {
-            name: 'Dental microscope',
+            name: 'Dental Microscope',
             photo: '/media/kit-microscope.webp',
             w: 720,
             h: 900,
             alt: 'The dental operating microscope on its arm',
-            note: 'The dental microscope provides powerful magnification and enhanced visualisation, allowing our doctors to perform highly precise surgical procedures and complex endodontic treatments with greater accuracy.',
+            note: 'The dental microscope provides powerful magnification and enhanced visualization, allowing our doctors to perform highly precise surgical procedures and complex endodontic treatments with greater accuracy.',
           },
           {
-            name: 'Advanced endodontic preparation and thermoplastic obturation systems',
+            name: 'Advanced Endodontic Preparation & Thermoplastic Obturation Systems',
             photo: '/media/kit-obturation.webp',
             w: 720,
             h: 900,
@@ -404,27 +414,27 @@ export const strings = {
             note: 'Our advanced root canal preparation and warm obturation systems are designed to achieve the highest possible level of precision during endodontic treatment.',
           },
           {
-            name: 'Nitrous oxide sedation',
+            name: 'Nitrous Oxide Sedation',
             photo: '/media/kit-sedation.webp',
             w: 720,
             h: 900,
             alt: 'The nitrous oxide sedation mask on its arm above the chair',
-            note: 'Also known as “laughing gas”, nitrous oxide sedation helps provide children with a calmer and more comfortable experience during dental treatment.',
+            note: 'Also known as “laughing gas,” nitrous oxide sedation helps provide children with a calmer and more comfortable experience during dental treatment.',
           },
           {
-            name: 'Laser hair removal system',
+            name: 'Laser Hair Removal System',
             photo: '/media/kit-hair.webp',
             w: 720,
             h: 960,
             alt: 'The Cynosure Elite+ laser hair removal unit',
             model: 'Cynosure Elite+ 2026',
             note: [
-            'The centre is equipped with the Cynosure Elite+ 2026, one of the world’s leading technologies for laser hair removal.',
+            'The center is equipped with the Cynosure Elite+ 2026, one of the world’s leading technologies for laser hair removal.',
             'Its advanced technology allows us to deliver precise, effective treatments designed to achieve reliable and long-lasting results.',
           ].join('\n'),
           },
           {
-            name: 'Radiographic imaging system',
+            name: 'Radiographic Imaging System',
             photo: '/media/kit-imaging.webp',
             w: 720,
             h: 900,
