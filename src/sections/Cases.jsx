@@ -22,11 +22,11 @@ export default function Cases({ t }) {
         <SplitWords as="h2" text={t.cases.heading} className="nr__h2" />
         <Reveal><Sub text={t.cases.sub} /></Reveal>
         <Reveal className="nr__lead">
-          <Seam {...casePairs[0]} label={t.cases.labels[0]} theme="seam--nr" t={t.cases} />
+          <Seam {...casePairs[0]} theme="seam--nr" t={t.cases} />
         </Reveal>
         <RevealGroup className="nr__grid" kind="scale" gap={0.1}>
-          {casePairs.slice(1).map((c, i) => (
-            <Seam key={c.id} {...c} label={t.cases.labels[i + 1]} theme="seam--nr" t={t.cases} />
+          {casePairs.slice(1).map((c) => (
+            <Seam key={c.id} {...c} theme="seam--nr" t={t.cases} />
           ))}
         </RevealGroup>
       </div>

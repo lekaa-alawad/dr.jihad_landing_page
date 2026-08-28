@@ -1,15 +1,16 @@
 // Prints what is still unconfirmed, immediately before a deploy.
 //
-// This exists because the four before/after case labels are invented — they were
-// written so the page read as finished during review, and they describe
-// treatments on real patients that nobody at the clinic has confirmed. That was
-// knowingly accepted for one deploy, on the understanding it gets fixed. A note
-// in a chat log does not survive; a step in the deploy command does.
+// It exists because a note in a chat log does not survive and a step in the
+// deploy command does. It began with the four invented before/after captions —
+// treatment names on real patients that nobody at the clinic had confirmed,
+// knowingly accepted for one deploy on the understanding it got fixed. It did:
+// the captions are gone and each case is numbered instead, so that entry has
+// been removed rather than left here to never fire again.
 //
-// It has since taken on the heavier job of naming the photographs of patients
-// whose consent to publish is not evidenced anywhere in this repository. Those
-// entries are not copy that can be rewritten later; if the consent turns out not
-// to exist, the files come off the site.
+// What remains is the heavier job it took on — naming the photographs of
+// patients whose consent to publish is not evidenced anywhere in this
+// repository. Those entries are not copy that can be rewritten later; if the
+// consent turns out not to exist, the files come off the site.
 //
 // It warns and continues rather than failing. Blocking a deploy over copy is not
 // this script's call to make — being impossible to miss is.
@@ -62,13 +63,6 @@ const OUTSTANDING = [
       '     Dr. Haidara Habib has no card, so his entry shows a monogram under a\n' +
       '     real name. Nothing on the page is false; one sixth of it is a blank.',
   },
-  {
-    find: '// PLACEHOLDER',
-    what: 'Case labels (cases.labels, both locales)',
-    detail:
-      'The four before/after captions are invented. They name treatments on real\n' +
-      '     patient photographs and were never confirmed by the clinic.',
-  },
 ];
 
 const hits = OUTSTANDING.filter((o) => src.includes(o.find));
@@ -85,8 +79,8 @@ if (hits.length) {
     console.log(`     ${h.detail}`);
   }
   console.log('');
-  console.log('  Remove the PLACEHOLDER markers in src/i18n.js once supplied,');
-  console.log('  and this notice goes away on its own.');
+  console.log('  Remove the markers named above from src/i18n.js once each is');
+  console.log('  resolved, and this notice goes away on its own.');
   console.log('');
 } else {
   console.log('\n  \x1b[32m✓\x1b[0m nothing outstanding in src/i18n.js\n');

@@ -4,11 +4,12 @@
 // bilingual Astro build in ../dr.jihad, which was written and reviewed against
 // the same brief — so the two builds say the same thing in the same voice.
 //
-// !! PLACEHOLDER DATA !!
-// The case treatment labels are still DUMMY values, added so the page reads as
-// finished in client review. They are NOT facts about this practice. This is a
-// medical clinic: they must be replaced with confirmed information before
-// launch. Search for PLACEHOLDER.
+// The four before/after captions used to be listed here — invented treatment
+// names, added so the page read as finished in client review, describing real
+// patients' work that nobody at the clinic had confirmed. They are gone: each
+// case is now numbered and nothing more. A slider that says only "Case 1"
+// claims nothing, which is the right amount to claim about a treatment we
+// cannot name.
 //
 // The team section used to be listed here too — six invented dentists. It no
 // longer is: every name and qualification in it came from the clinic, replaced
@@ -151,21 +152,14 @@ export const strings = {
     ],
 
     cases: {
-      heading: 'Every slider, on every picture, keeps the trace of the hand that reached this result.',
-      sub: 'Drag the slider. Above it the final touch, below it the first visit.',
+      heading: 'Every seam remembers a hand.',
+      sub: 'Drag the seam. Above it the work as it stands, below it as it came.',
       before: 'The first visit',
       after: 'The final touch',
       caseWord: 'Case',
       handle: 'drag to move the slider',
       compare: 'the same patient before and after treatment at the clinic. Drag the slider to compare.',
       shown: 'of the finished result shown',
-      // PLACEHOLDER
-      labels: [
-        'Porcelain veneers, upper arch',
-        'Full smile reconstruction',
-        'Composite bonding & whitening',
-        'Crowns, lower anterior',
-      ],
     },
 
     treatments: {
@@ -676,13 +670,6 @@ export const strings = {
       handle: 'اسحب لتحريك المؤشر',
       compare: 'المريض نفسه قبل العلاج وبعده في العيادة. اسحب المؤشر للمقارنة.',
       shown: 'من النتيجة النهائية ظاهرة',
-      // PLACEHOLDER
-      labels: [
-        'عدسات بورسلين، الفك العلوي',
-        'إعادة بناء كاملة للابتسامة',
-        'كومبوزيت وتبييض',
-        'تيجان، الأمامية السفلية',
-      ],
     },
 
     treatments: {

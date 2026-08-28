@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * All wording arrives through `t` (strings[lang].cases) — the control itself is
  * direction-agnostic, since the seam runs vertically in both locales.
  */
-export default function Seam({ src, id, label = '', theme = '', t }) {
+export default function Seam({ src, id, theme = '', t }) {
   const frameRef = useRef(null);
   const [pct, setPct] = useState(56);
   const dragging = useRef(false);
@@ -124,11 +124,15 @@ export default function Seam({ src, id, label = '', theme = '', t }) {
         </div>
       </div>
 
+      {/* The number and nothing else. This used to carry a treatment name
+          beside it — one of four invented captions describing real patients'
+          work that the clinic never confirmed — and naming a stranger's
+          treatment wrongly is not a caption, it is a claim. The picture is
+          the evidence; it does not need a caption to say what it shows. */}
       <figcaption className="seam__cap">
         <span className="seam__num">
           {t.caseWord} {id}
         </span>
-        {label && <span className="seam__label">{label}</span>}
         <span className="vh">
           {t.caseWord} {id}: {t.compare}
         </span>
