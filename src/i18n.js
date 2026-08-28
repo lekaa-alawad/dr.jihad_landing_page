@@ -81,15 +81,27 @@ export const strings = {
   en: {
     lang: 'en',
     dir: 'ltr',
-    clinic: 'Jihad Dental Care',
+    // The practice's own name, and the site's. It is what the browser tab
+    // shows, what an unfurl calls the site, and what sits beside the mark in
+    // the bar — one field, so those four can never disagree.
+    //
+    // Written without a space after the point, as the clinic writes it.
+    clinic: 'Dr.Jihad Alrashed',
+    // The person, not the practice. Keeps the ordinary spacing: this one is
+    // read as prose, in the description and as the founder in the JSON-LD.
     doctor: 'Dr. Jihad Alrashed',
     tagline: 'We create your smile',
 
     meta: {
-      // 61 chars — fits Google's ~600px title budget without truncation. The
+      // 55 chars — fits Google's ~600px title budget without truncation. The
       // city earns its place ahead of a fourth treatment: almost every search
       // that can convert here is a local one.
-      title: 'Jihad Dental Care Damascus — Implants, Veneers & Braces',
+      //
+      // The name leads, and that is what a narrow tab is for: a browser cuts a
+      // title from the right, so whatever comes first is the part still legible
+      // when the tab is down to a few characters. Anything ahead of the name
+      // would push it out of the only place most people ever read it.
+      title: 'Dr.Jihad Alrashed Damascus — Implants, Veneers & Braces',
       description:
         'Full-service dental clinic in Damascus led by Dr. Jihad Alrashed: cosmetic dentistry, implants, endodontics, orthodontics, children’s dentistry, dental and skin laser, injectables and an in-house Carestream imaging suite.',
       ogLocale: 'en_US',
@@ -510,7 +522,7 @@ export const strings = {
     // scripts/team-placeholders.mjs.
     team: {
       heading: 'The hands behind the work.',
-      sub: 'Six dentists, each with a discipline of their own.',
+      sub: 'Six doctors, each with a discipline of their own.',
       members: [
         {
           // Confirmed by the clinic: name, qualification and portrait. Nothing
@@ -616,12 +628,12 @@ export const strings = {
   ar: {
     lang: 'ar',
     dir: 'rtl',
-    clinic: 'جهاد لطب الأسنان',
+    clinic: 'د.جهاد الراشد',
     doctor: 'د. جهاد الراشد',
     tagline: 'نصنع ابتسامتك',
 
     meta: {
-      title: 'جهاد لطب الأسنان دمشق — زراعة وعدسات وتقويم',
+      title: 'د.جهاد الراشد دمشق — زراعة وعدسات وتقويم',
       description:
         'مركز أسنان متكامل في دمشق بقيادة د. جهاد الراشد: تجميل، زراعة، معالجة لبية، تقويم، أسنان أطفال، ليزر الأسنان والبشرة، حقونات، وقسم تصوير شعاعي بجهاز Carestream.',
       ogLocale: 'ar_AE',

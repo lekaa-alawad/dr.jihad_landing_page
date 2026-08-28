@@ -29,14 +29,22 @@ const clamp = (text, max = 158) => {
  * still flags — and now cannot reach a description at all, since the sliders
  * sit on the home page and home keeps its own tags.
  *
- * `home` keeps its existing tags untouched — it is the page with whatever
- * ranking the site has, and this split should not cost it that.
+ * The NAME LEADS on every page, ahead of what the page is. A browser truncates
+ * a tab title from the right, so the first characters are the only ones that
+ * survive a narrow tab — putting the section first would spend that space on
+ * "Our Servi…" and lose the practice's name in the one place most people read
+ * it. It costs the section its position at the front of a search result, which
+ * is the lesser of the two.
+ *
+ * `home` otherwise keeps the tags it had — it is the page with whatever ranking
+ * the site has, and neither the split nor the rename should cost it that. Only
+ * the brand token at the front of its title changed.
  */
 export function metaFor(lang, page = 'home') {
   const t = strings[lang];
   if (page === 'home') return { title: t.meta.title, description: t.meta.description };
 
-  const title = `${t.nav[page]} — ${t.clinic}`;
+  const title = `${t.clinic} — ${t.nav[page]}`;
   const description =
     page === 'treatments'
       ? clamp(`${t.treatments.heading} ${t.treatments.items.map((i) => i.name).join(' · ')}`)
