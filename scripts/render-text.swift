@@ -42,7 +42,24 @@ let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, att
 
 // A canvas with room for any of these strings, and a baseline far enough in
 // from the edges that ascenders and descenders both fit.
-let W = 4200, H = 700, BASELINE = 420.0, LEFT = 60.0
+//
+// 6400 rather than the 4200 this started at, which fitted the straplines it was
+// written for and nothing longer. A 34-character Arabic line at 300pt advances
+// 4323px and ran off the end — and because Arabic lays out right to left, what
+// fell off was the START of the string, so the card came out reading "يادة"
+// where it should read "عيادة". Silently, which is the worse half. Hence the
+// guard below: a line that does not fit is a failed run now, not a card with
+// its first letter quietly missing.
+let W = 6400, H = 700, BASELINE = 420.0, LEFT = 60.0
+
+// Measured before anything is drawn. CTLineDraw clips to the context and
+// reports nothing, so this is the only place an overrun is visible at all.
+let advance = CTLineGetTypographicBounds(line, nil, nil, nil)
+if LEFT + advance > Double(W) {
+    let msg = "render-text: the line advances \(String(format: "%.1f", advance))px from x=\(LEFT), past the \(W)px canvas. It would be clipped - for Arabic, at the START of the string. Raise W in scripts/render-text.swift.\n"
+    FileHandle.standardError.write(Data(msg.utf8))
+    exit(1)
+}
 
 guard let ctx = CGContext(data: nil, width: W, height: H, bitsPerComponent: 8,
                           bytesPerRow: W*4, space: CGColorSpaceCreateDeviceRGB(),

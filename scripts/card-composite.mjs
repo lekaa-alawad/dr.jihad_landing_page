@@ -37,7 +37,7 @@ const CONFIG = {
   // All three, for the colour fit: more skin and more uniform to average over.
   grading: [SRC + '3.psd.jpg', SRC + '1.psd.jpg', SRC + '5 (2).jpg'],
   refName: 'Dr. Leen Barakat', refSub: 'عيادة التقويم',
-  name:    'Dr. Esmail Mousa', sub:    'جرّاح تجميل',
+  name:    'Dr. Esmail Mousa', sub:    'عيادة الجراحة التجميلية والتصنيعية',
 };
 
 const W = 1080, H = 1920;
