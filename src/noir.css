@@ -358,13 +358,13 @@
 
 /* --- the opt-in buttons and their dialogs --------------------------------- */
 
-/* Two things on the page open over it: a treatment's media, and the list of
-   equipment in the about section. They are the same offer to the visitor, so
-   they are the same button and the same dialog — one declaration, worn by
-   both. Only what is *inside* differs, and that is further down. */
+/* One thing on the page opens over it: a treatment's media. The equipment list
+   in the about section used to share this button and this dialog — it reads
+   inline now, so these are the gallery's alone. Anything here that the two of
+   them once shared has been left as it was; nothing was tuned to the one
+   caller that remains. */
 
-.gal__open,
-.kit__open {
+.gal__open {
   display: inline-flex; align-items: center; gap: 0.6rem;
   margin-block-start: 1.1rem;
   padding: 0.55rem 1.1rem; border-radius: 999px;
@@ -373,16 +373,13 @@
   border: 1px solid var(--hair);
   transition: background 0.25s, border-color 0.25s, transform 0.25s;
 }
-.gal__open:hover,
-.kit__open:hover { background: rgba(251, 247, 243, 0.07); border-color: var(--fog); transform: translateY(-1px); }
-.gal__openCount,
-.kit__count {
+.gal__open:hover { background: rgba(251, 247, 243, 0.07); border-color: var(--fog); transform: translateY(-1px); }
+.gal__openCount {
   font-size: 0.72rem; font-weight: 700; color: var(--peach);
   padding-inline-start: 0.6rem; border-inline-start: 1px solid var(--hair);
 }
 
-.gal__dialog,
-.kit__dialog {
+.gal__dialog {
   width: min(94vw, 1000px);
   max-height: 88vh;
   /* The UA centres a modal dialog with `margin: auto`; the reset at the top of
@@ -393,27 +390,22 @@
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--hair);
   overflow: auto; overscroll-behavior: contain;
 }
-.gal__dialog::backdrop,
-.kit__dialog::backdrop { background: rgba(8, 6, 5, 0.82); backdrop-filter: blur(6px); }
-.gal__dialogBar,
-.kit__bar {
+.gal__dialog::backdrop { background: rgba(8, 6, 5, 0.82); backdrop-filter: blur(6px); }
+.gal__dialogBar {
   position: sticky; top: 0; z-index: 3;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: 1rem clamp(1rem, 3vw, 1.6rem);
   background: #14100e; border-bottom: 1px solid var(--hair);
 }
-.gal__dialogBar h4,
-.kit__bar h4 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
-.gal__close,
-.kit__close {
+.gal__dialogBar h4 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
+.gal__close {
   width: 34px; height: 34px; flex: none;
   display: grid; place-items: center;
   font: inherit; font-size: 1.4rem; line-height: 1; cursor: pointer;
   color: var(--light); background: transparent;
   border: 1px solid var(--hair); border-radius: 50%;
 }
-.gal__close:hover,
-.kit__close:hover { background: rgba(251, 247, 243, 0.09); }
+.gal__close:hover { background: rgba(251, 247, 243, 0.09); }
 
 /* Columns, not a grid. The dialog now mixes an upright clip with landscape
    console shots and portrait ones, and in a grid the row height is set by the
@@ -521,7 +513,7 @@
   max-width: 62ch;
 }
 
-/* The bridge sentence and the button that answers it. The rule above them
+/* The bridge sentence and the list that answers it. The rule above them
    separates the equipment from the prose without starting a new section. */
 .nr__kit {
   margin-block-start: clamp(1.8rem, 4vw, 2.6rem);
@@ -530,14 +522,33 @@
 }
 .nr__kitLead { color: var(--fog); font-size: 0.98rem; line-height: 1.7; max-width: 52ch; }
 
-/* --- the equipment dialog ------------------------------------------------- */
+/* --- the equipment list --------------------------------------------------- */
 
-/* Narrower than the media dialog: that one is packing photographs into
-   columns, this one is a measure of text, and a 1000px line is unreadable. */
-.kit__dialog { width: min(94vw, 720px); }
+/* Two shapes, and the width decides which. On a phone it is a LIST: one device
+   under the next, hairline between, the way the record and the departments are
+   read. Above 700px it becomes a GRID OF CARDS — seven single-column rows on a
+   1280px page is a lot of scrolling for content that is mostly photograph, and
+   the pictures are the argument here.
 
-.kit__list { list-style: none; padding: clamp(0.4rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.6rem) clamp(1.2rem, 3vw, 1.8rem); }
-.kit__item { padding-block: 1.1rem; border-bottom: 1px solid var(--hair); }
+   The card is deliberately the team card's: fixed-ratio photograph, name, then
+   the words. Two pages of this site show a set of things with a picture each,
+   and them agreeing on how that looks is worth more than either shape being
+   individually optimal. See `.nr__doc`.
+
+   It sat in a dialog until recently, which supplied the inset the rows sat in.
+   In the page they take the section's own measure instead, and the padding
+   goes: a list indented from the paragraph above it would read as an aside. */
+.kit__title {
+  font-family: var(--display);
+  font-size: clamp(1.05rem, 2vw, 1.3rem); font-weight: 600;
+  color: var(--light);
+  margin-block-start: clamp(1.4rem, 3vw, 2rem);
+}
+
+.kit__list { list-style: none; margin-block-start: 0.4rem; }
+/* The last row's rule would sit on nothing, so only the gaps between devices
+   are drawn. */
+.kit__item { padding-block: clamp(1.3rem, 3vw, 1.8rem); border-bottom: 1px solid var(--hair); }
 .kit__item:last-child { border-bottom: 0; padding-block-end: 0; }
 
 .kit__name {
@@ -831,12 +842,15 @@
 .nr__row p + p { margin-block-start: 0.6rem; }
 .kit__note + .kit__note { margin-block-start: 0.5rem; }
 
-/* The equipment photographs. Picture beside the words at any width that can
-   hold both; stacked below 560px, where a 280px column would leave the text in
-   a gutter four words wide. */
+/* THE LIST, up to 700px. Picture beside the words at any width that can hold
+   both; stacked below 560px, where a 210px column would leave the text in a
+   gutter four words wide. */
 .kit__item { display: grid; gap: 1rem 1.3rem; align-items: start; }
-@media (min-width: 560px) {
+@media (min-width: 560px) and (max-width: 699.98px) {
   .kit__item { grid-template-columns: minmax(0, 210px) minmax(0, 1fr); }
+  /* An item with no photograph keeps the text in the same column as the rest,
+     rather than sliding under where the pictures are. */
+  .kit__item:not(:has(.kit__shot)) .kit__body { grid-column: 2; }
 }
 .kit__shot {
   display: block; width: 100%; height: auto;
@@ -844,10 +858,50 @@
   background: var(--raise);
   box-shadow: inset 0 0 0 1px var(--hair);
 }
-/* An item with no photograph keeps the text in the same column as the rest,
-   rather than sliding under where the pictures are. */
-@media (min-width: 560px) {
-  .kit__item:not(:has(.kit__shot)) .kit__body { grid-column: 2; }
+
+/* THE CARD GRID, from 700px: two columns, three from 1000px.
+
+   Counted columns rather than the `auto-fill` minmax the team grid uses, and
+   the photographs are why. A floor low enough to give three columns at 1000px
+   also gives four at 1280 — where a 265px card sets a five-line note under a
+   330px-tall picture — and a floor high enough to stop that leaves 1000px on
+   two columns, with cards wider than the words in them need. The band this has
+   to cover is too narrow for one floor to be right at both ends of it. Three
+   is the ceiling on purpose.
+
+   Seven devices leave the last row short at either count — the same ragged
+   edge `.nr__grid` leaves with four cases in three columns. */
+@media (min-width: 700px) {
+  .kit__list {
+    display: grid;
+    gap: clamp(1.8rem, 3.4vw, 2.8rem) clamp(1.1rem, 2.4vw, 2rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 1000px) {
+    .kit__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  /* The rules and the row padding belonged to the list — between cards the gap
+     already does that work, and a hairline under each would draw a box that is
+     not there. */
+  .kit__item {
+    display: flex; flex-direction: column;
+    /* The base rule's 1rem row gap would stack with the photograph's own
+       margin below. The margin is the one the team card uses, so it stays and
+       the gap goes. */
+    gap: 0;
+    padding-block: 0; border-bottom: 0;
+  }
+
+  /* 4:5, the ratio all seven renders are supplied in bar one — so `cover` is
+     trimming a hair off the 720x960 unit and nothing off the rest. The ratio is
+     fixed rather than left to the file because a grid row is as tall as its
+     tallest cell: one 3:4 photograph among six 4:5 would push a band of empty
+     card under its whole row. Every device is centred in its frame with room
+     to spare, which is what makes a fixed crop safe here at all. */
+  .kit__shot {
+    aspect-ratio: 4 / 5; object-fit: cover;
+    margin-block-end: 1.1rem;
+  }
 }
 
 

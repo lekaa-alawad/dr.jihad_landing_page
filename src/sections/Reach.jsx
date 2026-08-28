@@ -2,11 +2,18 @@ import { SplitWords, RevealGroup, Reveal } from '../components/Kinetic.jsx';
 import { dialable, waLink } from '../i18n.js';
 
 /**
- * Address, numbers, hours — kept on the home page rather than given a page.
+ * Address, numbers, hours — the close of every page, and the only section that
+ * repeats across all three.
  *
- * Five rows is a section, not a document, and a `/contact/` carrying only this
- * would be the same empty page the split set out to remove. The nav still says
- * Contact; it points here.
+ * Still not a document of its own: five rows is a section, and a `/contact/`
+ * carrying only this would be the same empty page the split set out to remove.
+ * There is no nav entry pointing here either — the call and WhatsApp buttons in
+ * the bar are the contact affordance, and they act rather than navigate. What
+ * this is instead is the ending: whichever page a visitor came in on, it
+ * finishes with where the clinic is and how to reach it, under the tagline.
+ *
+ * `nr__section--end` is what makes that read as an ending rather than one more
+ * section — it is the only one on a raised ground, so the page visibly stops.
  */
 export default function Reach({ t }) {
   return (

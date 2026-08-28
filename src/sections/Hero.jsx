@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { animate, scroll } from 'motion';
 import { SplitLines, SplitWords, Reveal } from '../components/Kinetic.jsx';
-import { pathFor } from '../routes.js';
 import { HERO } from '../i18n.js';
 
 /**
@@ -14,7 +13,7 @@ import { HERO } from '../i18n.js';
  * the hold, and the copy would sit invisible waiting for a curtain that was
  * never built.
  */
-export default function Hero({ t, lang }) {
+export default function Hero({ t }) {
   const heroRef = useRef(null);
   const shotRef = useRef(null);
   const titleRef = useRef(null);
@@ -64,11 +63,13 @@ export default function Hero({ t, lang }) {
         <SplitLines lines={t.hero.lines} className="nr__h1" delay={0.25} afterIntro />
         <SplitWords text={t.hero.lede} className="nr__lede" afterIntro />
         <Reveal className="nr__acts" delay={0.2} afterIntro>
-          {/* `#reach` is still on this page. `secondary` now leaves it — the
-              sliders moved to their own page, so this is a link between
-              documents and cannot stay a bare fragment. */}
+          {/* Both targets are sections of this page, so both stay bare
+              fragments. `secondary` briefly pointed at a `/results/` document
+              while the sliders had a page of their own; they are back on the
+              home page, and a cross-document link to a section of the page you
+              are already on would reload it to move a screen and a half. */}
           <a className="nr__cta" href="#reach">{t.hero.primary}</a>
-          <a className="nr__cta nr__cta--ghost" href={pathFor(lang, 'results')}>{t.hero.secondary}</a>
+          <a className="nr__cta nr__cta--ghost" href="#cases">{t.hero.secondary}</a>
         </Reveal>
       </div>
       <div className="nr__scope" aria-hidden="true">

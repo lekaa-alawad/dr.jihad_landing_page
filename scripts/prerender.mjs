@@ -71,10 +71,11 @@ try {
       // React swallowed it. Better to fail the build than to publish a shell and
       // quietly lose the one thing this script exists for.
       //
-      // The floor is per-page now. `results` is one section of four sliders and
-      // legitimately renders a fraction of what home does, so a single 2000-byte
-      // rule would either fail that page or be too slack to catch an empty one.
-      const floor = page === 'home' ? 6000 : 1500;
+      // The floor is per-page: home now carries the sliders as well, and the
+      // other two are a single section each and legitimately render a fraction
+      // of what it does, so one flat rule would either fail them or be too
+      // slack to catch an empty one.
+      const floor = page === 'home' ? 8000 : 1500;
       if (body.length < floor) {
         throw new Error(`${rel}: rendered only ${body.length} bytes, under the ${floor} floor — prerender produced an empty page`);
       }

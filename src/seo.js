@@ -24,10 +24,10 @@ const clamp = (text, max = 158) => {
  *
  * That constraint is deliberate. A meta description is the sentence a search
  * result shows, so inventing one here would put unverified prose in front of
- * more people than the page itself does. The case LABELS are excluded for the
- * same reason and more sharply: they are the four invented captions predeploy
- * still flags, and a meta description is the last place an unconfirmed claim
- * about a real patient's treatment should end up.
+ * more people than the page itself does. The case LABELS were excluded for the
+ * same reason and more sharply — they are the four invented captions predeploy
+ * still flags — and now cannot reach a description at all, since the sliders
+ * sit on the home page and home keeps its own tags.
  *
  * `home` keeps its existing tags untouched — it is the page with whatever
  * ranking the site has, and this split should not cost it that.
@@ -40,9 +40,7 @@ export function metaFor(lang, page = 'home') {
   const description =
     page === 'treatments'
       ? clamp(`${t.treatments.heading} ${t.treatments.items.map((i) => i.name).join(' · ')}`)
-      : page === 'results'
-        ? clamp(`${t.cases.heading} ${t.cases.sub}`)
-        : clamp(t.about.body[0]);
+      : clamp(t.about.body[0]);
 
   return { title, description };
 }
@@ -202,7 +200,7 @@ export function headTags(lang, page = 'home') {
     }`;
 }
 
-/** Every page in every locale — four by two, each pointing at its own twin. */
+/** Every page in every locale — three by two, each pointing at its own twin. */
 export function sitemapXml() {
   const today = new Date().toISOString().slice(0, 10);
   const entry = (lang, page) => `  <url>

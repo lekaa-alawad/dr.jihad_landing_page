@@ -113,7 +113,6 @@ export const strings = {
       label: 'Clinic sections',
       home: 'Home',
       treatments: 'Our Services',
-      results: 'Before & After',
       about: 'The Centre',
       call: 'Call',
       whatsapp: 'WhatsApp',
@@ -367,7 +366,6 @@ export const strings = {
       // renders, not this clinic's own units. See MEDIA.md.
       kit: {
         lead: 'And to make certain that result is reached, the centre has been equipped with the newest specialist devices:',
-        see: 'The equipment',
         title: 'The newest specialist devices',
         // `model` is the make as the clinic writes it, in Latin script. It is
         // kept apart from the name so the markup can mark it as its own LTR
@@ -634,7 +632,6 @@ export const strings = {
       label: 'أقسام العيادة',
       home: 'الرئيسية',
       treatments: 'خدماتنا',
-      results: 'قبل وبعد',
       about: 'المركز',
       call: 'اتصل',
       whatsapp: 'واتساب',
@@ -843,7 +840,6 @@ export const strings = {
       // renders, not this clinic's own units. See MEDIA.md.
       kit: {
         lead: 'و لضمان الوصول إلى النتيجة العلاجية المرجوة ، تم تجهيز المركز بأحدث الأجهزة التخصصية :',
-        see: 'الأجهزة',
         title: 'أحدث الأجهزة التخصصية',
         items: [
           {
